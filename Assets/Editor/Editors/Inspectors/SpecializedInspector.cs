@@ -26,18 +26,14 @@ public class SpecializedInspector : Editor {
         EditorGUI.indentLevel--;
     }
 
-    protected void IndentedInspector(string title, IndentedInspectorDelegate inspectorDelegate) {
+    protected void IndentedInspector(string title, IndentedInspectorDelegate inspectorDelegate, bool openAtStart = true) {
         // TODO(Cristian): Have a map of the opened sections for we can correctly foldout
-        bool opened = true;
+        bool opened = openAtStart;
         if (_foldoutStatus.ContainsKey(title)) {
             opened = _foldoutStatus[title];
         } else {
-            if (title == "Debug") {
-                opened = false;
-            }
             _foldoutStatus.Add(title, opened);
         }
-
 
         opened = EditorGUILayout.Foldout(opened , title);
         if (opened) {

@@ -79,7 +79,7 @@ public class FloorBehaviour : CustomMonoBehaviour {
         Refresh();
     }
 
-    public void Refresh() {
+    public override void Refresh() {
         RecreateBoundingBox();
     }
 

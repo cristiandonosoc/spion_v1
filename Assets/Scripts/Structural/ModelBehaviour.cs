@@ -21,4 +21,40 @@ public class ModelBehaviour : MonoBehaviour {
     public Quaternion QuaternionFix {
         get { return Quaternion.Euler(rotationFix); }
     }
+
+    // Don't serialize this
+    private Vector3 _meshSize;
+
+    public Vector3 MeshSize {
+        get {
+            // TODO(Cristian): Maybe cache this? This shouldn't be called in runtime more than once anyway...
+            List<MeshFilter> meshFilterList = new List<MeshFilter>();
+            MeshFilter selfMeshFilter = GetComponent<MeshFilter>();
+            if (selfMeshFilter) {
+                meshFilterList.Add(selfMeshFilter);
+            }
+
+            foreach(MeshFilter mf in GetComponentsInChildren<MeshFilter>()) {
+                meshFilterList.Add(mf);
+            }
+
+            if (meshFilterList.Count == 0) {
+                throw new System.Exception("No Mesh Filter");
+            }
+
+            float maxSqrMagnitude = 0;
+            Vector3 meshSize = Vector3.zero;
+            foreach(MeshFilter mf in meshFilterList) {
+                Vector3 size = mf.sharedMesh.bounds.size;
+                float currentSqrMagnitude = size.sqrMagnitude;
+                if (currentSqrMagnitude > maxSqrMagnitude) {
+                    currentSqrMagnitude = maxSqrMagnitude;
+                    meshSize = size;
+                }
+            }
+            return meshSize;
+        }
+    }
+
+
 }

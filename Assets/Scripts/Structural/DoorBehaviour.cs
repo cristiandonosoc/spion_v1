@@ -76,7 +76,7 @@ public class DoorBehaviour : CustomMonoBehaviour {
         _animator = _doorModelInstance.GetComponent<Animator>();
     }
 
-    public void Refresh() {
+    public override void Refresh() {
         RecreateBoundingBox();
     }
 

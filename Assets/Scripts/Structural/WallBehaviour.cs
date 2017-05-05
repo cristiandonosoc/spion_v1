@@ -95,7 +95,7 @@ public class WallBehaviour : CustomMonoBehaviour {
         Init();
     }
 
-    public void Refresh() {
+    public override void Refresh() {
         RecreateBoundingBox();
         if (liveUpdatePrefabs) {
             CalculatePrefabs(recreate: false);

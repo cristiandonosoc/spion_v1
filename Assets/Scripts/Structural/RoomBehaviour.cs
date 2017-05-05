@@ -65,7 +65,7 @@ public class RoomBehaviour : CustomMonoBehaviour {
         Init();
     }
 
-    public void Refresh() {
+    public override void Refresh() {
         RecreateBoundingBox();
     }
 

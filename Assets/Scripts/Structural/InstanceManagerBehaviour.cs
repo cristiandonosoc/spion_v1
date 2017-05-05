@@ -22,11 +22,11 @@ public class InstanceManagerBehaviour : SingletonBehaviour<InstanceManagerBehavi
     #region ACTIONS
 
     public void AddRoom() {
-        //// We count how many rooms we have
-        //int roomCount = GetComponentsInChildren<RoomBehaviour>().Length;
-        //var room = new GameObject().AddComponent<RoomBehaviour>();
-        //room.name = "Room_" + roomCount;
-        //room.transform.parent = transform;
+        // We count how many rooms we have
+        int roomCount = GetComponentsInChildren<RoomBehaviour>().Length;
+        var room = new GameObject().AddComponent<RoomBehaviour>();
+        room.name = "Room_" + roomCount;
+        room.transform.parent = transform;
 
         //// 
         //room.defaultFloorPanel = defaultFloorPanel;

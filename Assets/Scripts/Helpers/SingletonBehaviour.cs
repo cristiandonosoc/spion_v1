@@ -66,4 +66,8 @@ public class SingletonBehaviour<T> : CustomMonoBehaviour where T : CustomMonoBeh
     protected override void PlayModeAwake() {
         // Do nothing
     }
+
+    public override void Refresh() {
+        // Do nothing
+    }
 }

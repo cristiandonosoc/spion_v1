@@ -27,8 +27,15 @@ public abstract class CustomMonoBehaviour : MonoBehaviour {
 
     protected abstract void EditorAwake();
     protected abstract void PlayModeAwake();
+    public abstract void Refresh();
 
-
+    protected void DestroyChildGameObject(GameObject gameObject) {
+#if UNITY_EDITOR
+        DestroyImmediate(gameObject);
+#else
+        Destroy(gameObject);
+#endif
+    }
 }
 
 //public abstract class InstanceMonoBehaviour : CustomMonoBehaviour {
