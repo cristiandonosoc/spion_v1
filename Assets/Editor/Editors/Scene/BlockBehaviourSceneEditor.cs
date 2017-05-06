@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-public partial class BlockBehaviourEditor { 
+public partial class BlockBehaviourEditor {
 
     private void OnSceneGUI() {
         _target = (BlockBehaviour)target;
@@ -45,12 +45,18 @@ public partial class BlockBehaviourEditor {
             var rot = _target.transform.rotation.eulerAngles;
             newPos = VectorHelpers.RotateAroundPivot(newPos, _target.transform.position,
                                                      Quaternion.Euler(-rot));
-            Vector3 size = (newPos - _target.transform.position) * 2;
+            // We see how much this point moved to determine the new size
+            // Position difference is inverted because we count negatively from position
+            Vector3 posDiff = -(newPos - lowPos);
+            Vector3 newSize = _target.Size + posDiff / 2;
             if (_target.snapVectors) {
-                VectorHelpers.SnapVector(ref size);
+                VectorHelpers.SnapVector(ref newSize, snappingFactor: 0.5f);
             }
-            size = -size;   // This is lower
-            _target.Size = size;
+            // We see the size difference and move the position accordingly
+            Vector3 sizeDiff = newSize - _target.Size;
+            // We substract because size changes invert the change on position
+            _target.transform.localPosition -= sizeDiff / 2;
+            _target.Size = newSize;
             change = true;
         }
         return change;
@@ -69,11 +75,17 @@ public partial class BlockBehaviourEditor {
             var rot = _target.transform.rotation.eulerAngles;
             newPos = VectorHelpers.RotateAroundPivot(newPos, _target.transform.position,
                                                      Quaternion.Euler(-rot));
-            Vector3 size = (newPos - _target.transform.position) * 2;
+
+            // We see how much this point moved to determine the new size
+            Vector3 posDiff = newPos - highPos;
+            Vector3 newSize = _target.Size + posDiff / 2;
             if (_target.snapVectors) {
-                VectorHelpers.SnapVector(ref size);
+                VectorHelpers.SnapVector(ref newSize, snappingFactor: 0.5f);
             }
-            _target.Size = size;
+            // We see the size difference and move the position accordingly
+            Vector3 sizeDiff = newSize - _target.Size;
+            _target.transform.localPosition += sizeDiff / 2;
+            _target.Size = newSize;
             change = true;
         }
         return change;
