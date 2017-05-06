@@ -11,9 +11,14 @@ public static class VectorHelpers {
         Z
     }
 
-    public static void SnapVector(ref Vector2 v, bool snapX = true, bool snapY = true) {
-        if (snapX) { v.x = (int)v.x; }
-        if (snapY) { v.y = (int)v.y; }
+    private static float SnapByFactor(float original, float snappingFactor) {
+        int factor = (int)(original / snappingFactor);
+        return snappingFactor * factor;
+    }
+
+    public static void SnapVector(ref Vector2 v, bool snapX = true, bool snapY = true, float snappingFactor = 1) {
+        if (snapX) { v.x = SnapByFactor(v.x, snappingFactor); }
+        if (snapY) { v.y = SnapByFactor(v.y, snappingFactor); }
     }
 
     public static Vector2 SnapToAngle(Vector2 v, float snap) {
@@ -26,12 +31,11 @@ public static class VectorHelpers {
         return new Vector2(t.x, t.z);
     }
 
-    public static void SnapVector(ref Vector3 v, bool snapX = true, bool snapY = true, bool snapZ = true) {
-        if (snapX) { v.x = (int)v.x; }
-        if (snapY) { v.y = (int)v.y; }
-        if (snapZ) { v.z = (int)v.z; }
+    public static void SnapVector(ref Vector3 v, bool snapX = true, bool snapY = true, bool snapZ = true, float snappingFactor = 1) {
+        if (snapX) { v.x = SnapByFactor(v.x, snappingFactor); }
+        if (snapY) { v.y = SnapByFactor(v.y, snappingFactor); }
+        if (snapZ) { v.z = SnapByFactor(v.z, snappingFactor); }
     }
-
 
     public static Vector3 Multiply(Vector3 a, Vector3 b) {
         return new Vector3(a.x * b.x,

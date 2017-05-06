@@ -33,6 +33,11 @@ public partial class RoomBehaviourEditor : SpecializedInspector {
         //    DoorBehaviour door = _roomBehaviour.AddDoor();
         //    Selection.activeTransform = door.transform;
         //}
+
+        if (GUILayout.Button("Add Block")) {
+            BlockBehaviour block = _roomBehaviour.AddBlock();
+            Selection.activeTransform = block.transform;
+        }
     }
 
     private void DataInspector() {

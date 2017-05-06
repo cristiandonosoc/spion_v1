@@ -26,9 +26,21 @@ public class RoomBehaviour : CustomMonoBehaviour {
             size = new Vector3();
         }
     }
+
     [SerializeField]
     private Data _data;
-    private BoxCollider _boxCollider;
+    private BoxCollider _collider;
+    public BoxCollider Collider {
+        get {
+            if (_collider == null) {
+                _collider = GetComponent<BoxCollider>();
+                if (_collider == null) {
+                    _collider = gameObject.AddComponent<BoxCollider>();
+                }
+            }
+            return _collider;
+        }
+    }
 
     #region GETTERS/SETTERS
 
@@ -49,46 +61,36 @@ public class RoomBehaviour : CustomMonoBehaviour {
 
     #endregion
 
-    private void Init() {
-        if (initialized) { return; }
-        initialized = true;
+    public override void Refresh() {
+        Collider.size = Size;
+    }
+
+    protected override void EditorAwake() {
         _data = new Data();
         _data.size = new Vector3(5f, 1f, 5f);
         name = "Room";
         // We put it to the parent
         var imb = SingletonBehaviour<InstanceManagerBehaviour>.Instance;
         transform.parent = imb.transform;
+        Collider.isTrigger = true;
         Refresh();
     }
 
-    public void Awake() {
-        Init();
-    }
-
-    public override void Refresh() {
-        RecreateBoundingBox();
-    }
-
-    private void RecreateBoundingBox() {
-        if (_boxCollider == null) {
-            _boxCollider = GetComponent<BoxCollider>();
-            if (_boxCollider == null) {
-                _boxCollider = gameObject.AddComponent<BoxCollider>();
-            }
-        }
-        _boxCollider.center = Vector3.zero;
-        _boxCollider.size = Size;
-    }
-
-    protected override void EditorAwake() {
-        throw new NotImplementedException();
-    }
-
     protected override void PlayModeAwake() {
-        throw new NotImplementedException();
+        Refresh();
     }
 
     #region ACTIONS
+
+    public BlockBehaviour AddBlock() {
+        BlockBehaviour block = new GameObject().AddComponent<BlockBehaviour>();
+        block.transform.parent = transform;
+
+        var imb = SingletonBehaviour<InstanceManagerBehaviour>.Instance;
+        block.BlockModel = imb.defaultBlockModel;
+        block.Refresh();
+        return block;
+    }
 
     //public FloorBehaviour AddFloor() {
     //    FloorBehaviour floor = new GameObject().AddComponent<FloorBehaviour>();

@@ -14,6 +14,9 @@ public class InstanceManagerBehaviour : SingletonBehaviour<InstanceManagerBehavi
     public Vector3 defaultWallCount;
     public bool createWallsWithRoom = true;
 
+
+    public ModelBehaviour defaultBlockModel;
+
     #endregion UI
 
     // Singleton guarantee

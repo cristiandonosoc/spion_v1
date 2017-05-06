@@ -18,7 +18,7 @@ public partial class RoomBehaviourEditor {
                                                   _roomBehaviour.transform.rotation);
         if (EditorGUI.EndChangeCheck()) {
             if (_roomBehaviour.snapVectors) {
-                VectorHelpers.SnapVector(ref newPos);
+                VectorHelpers.SnapVector(ref newPos, snappingFactor: 0.5f);
             }
             _roomBehaviour.transform.position = newPos;
             change = true;

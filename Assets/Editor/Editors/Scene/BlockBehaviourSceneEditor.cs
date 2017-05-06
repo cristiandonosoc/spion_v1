@@ -26,7 +26,7 @@ public partial class BlockBehaviourEditor {
                                                   _target.transform.rotation);
         if (EditorGUI.EndChangeCheck()) {
             if (_target.snapVectors) {
-                VectorHelpers.SnapVector(ref newPos);
+                VectorHelpers.SnapVector(ref newPos, snappingFactor: 0.5f);
             }
             _target.transform.position = newPos;
             change = true;
