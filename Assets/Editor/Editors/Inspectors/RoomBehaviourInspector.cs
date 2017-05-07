@@ -7,10 +7,10 @@ using UnityEngine;
 [CustomEditor(typeof(RoomBehaviour))]
 public partial class RoomBehaviourEditor : SpecializedInspector {
 
-    private RoomBehaviour _roomBehaviour;
+    private RoomBehaviour _target;
 
     public override void OnInspectorGUI() {
-        _roomBehaviour = (RoomBehaviour)target;
+        _target = (RoomBehaviour)target;
 
         IndentedInspector("Actions", ActionsInspector);
         HorizontalBreak();
@@ -22,37 +22,25 @@ public partial class RoomBehaviourEditor : SpecializedInspector {
     }
 
     private void ActionsInspector() {
-        //if (GUILayout.Button("Add Floor")) {
-        //    _roomBehaviour.AddFloor();
-        //}
-        //if (GUILayout.Button("Add Wall")) {
-        //    WallBehaviour wall = _roomBehaviour.AddWall();
-        //    Selection.activeTransform = wall.transform;
-        //}
-        //if (GUILayout.Button("Add Door")) {
-        //    DoorBehaviour door = _roomBehaviour.AddDoor();
-        //    Selection.activeTransform = door.transform;
-        //}
-
         if (GUILayout.Button("Add Block")) {
-            BlockBehaviour block = _roomBehaviour.AddBlock();
+            BlockBehaviour block = _target.AddBlock();
             Selection.activeTransform = block.transform;
         }
     }
 
     private void DataInspector() {
         EditorGUI.BeginChangeCheck();
-        Vector3 size = EditorGUILayout.Vector3Field("Size", _roomBehaviour.Size);
+        Vector3 size = EditorGUILayout.Vector3Field("Size", _target.Size);
         if (EditorGUI.EndChangeCheck()) {
-            if (_roomBehaviour.snapVectors) {
+            if (_target.snapVectors) {
                 VectorHelpers.SnapVector(ref size);
             }
-            _roomBehaviour.Size = size;
+            _target.Size = size;
         }
     }
 
     private void MiscInspector() {
-        _roomBehaviour.snapVectors = EditorGUILayout.Toggle("Snap Vectors", _roomBehaviour.snapVectors);
+        _target.snapVectors = EditorGUILayout.Toggle("Snap Vectors", _target.snapVectors);
     }
 
     private void DebugInspector() {
