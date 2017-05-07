@@ -6,16 +6,8 @@ public class InstanceManagerBehaviour : SingletonBehaviour<InstanceManagerBehavi
 
     #region UI
 
-    public ModelBehaviour defaultFloorPanel;
-    public Vector3 defaultFloorPanelCount;
-    public bool createFloorWithRoom = true;
-
-    public ModelBehaviour defaultWall;
-    public Vector3 defaultWallCount;
-    public bool createWallsWithRoom = true;
-
-
     public ModelBehaviour defaultBlockModel;
+    public AnimatedModelBehaviour defaultDoorModel;
 
     #endregion UI
 

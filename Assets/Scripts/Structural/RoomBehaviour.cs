@@ -96,5 +96,20 @@ public class RoomBehaviour : CustomMonoBehaviour {
         return block;
     }
 
+    public DoorBehaviour AddDoor() {
+        // We cound hoy many doors we have
+        int doorCount = GetComponentsInChildren<DoorBehaviour>().Length;
+        DoorBehaviour door = new GameObject().AddComponent<DoorBehaviour>();
+        door.name = "Door_" + doorCount;
+        door.transform.parent = transform;
+        door.transform.localPosition = Vector3.zero;
+
+        // We get the default door model
+        var imb = SingletonBehaviour<InstanceManagerBehaviour>.Instance;
+        door.DoorModel = imb.defaultDoorModel;
+        door.Refresh();
+        return door;
+    }
+
     #endregion ACTIONS
 }

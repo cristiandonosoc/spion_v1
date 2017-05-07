@@ -12,7 +12,7 @@ public partial class InstanceManagerBehaviourEditor : SpecializedInspector {
 
         IndentedInspector("Room", ActionsInspector);
         HorizontalBreak();
-        IndentedInspector("Defaults", DefaultsInspector);
+        IndentedInspector("Debug", DebugInspector);
     }
 
     private void ActionsInspector() {
@@ -22,11 +22,8 @@ public partial class InstanceManagerBehaviourEditor : SpecializedInspector {
         }
     }
 
-    private void DefaultsInspector() {
-        _target.defaultBlockModel = (ModelBehaviour)EditorGUILayout.ObjectField("Default Block Prefab",
-                                                                                _target.defaultBlockModel,
-                                                                                typeof(ModelBehaviour),
-                                                                                false);
+    private void DebugInspector() {
+        DrawDefaultInspector();
     }
 
 }
