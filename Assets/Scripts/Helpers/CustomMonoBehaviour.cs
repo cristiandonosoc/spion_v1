@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 
+[ExecuteInEditMode]
 public abstract class CustomMonoBehaviour : MonoBehaviour {
 
     public void Log(string message, params object[] args) {

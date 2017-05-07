@@ -12,6 +12,7 @@ using UnityEngine;
 /// </summary>
 public class ModelBehaviour : MonoBehaviour {
 
+    public bool drawGizmos = false;
     public Vector3 rotationFix;
 
     public VectorHelpers.CoordChange ChangeXTo;
@@ -22,11 +23,22 @@ public class ModelBehaviour : MonoBehaviour {
         get { return Quaternion.Euler(rotationFix); }
     }
 
-    // Don't serialize this
-    private Vector3 _meshSize;
+    void OnDrawGizmos() {
+        if (!drawGizmos) { return; }
+        Color oldColor = Gizmos.color;
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawWireCube(transform.position, MeshSize);
+        Gizmos.color = oldColor;
+    }
 
+    public bool refreshMeshSize = true;
+
+    private Vector3 _meshSize;
     public Vector3 MeshSize {
         get {
+            if (!refreshMeshSize && _meshSize != null && _meshSize != Vector3.zero) {
+                return _meshSize;
+            }
             // TODO(Cristian): Maybe cache this? This shouldn't be called in runtime more than once anyway...
             List<MeshFilter> meshFilterList = new List<MeshFilter>();
             MeshFilter selfMeshFilter = GetComponent<MeshFilter>();
@@ -42,17 +54,18 @@ public class ModelBehaviour : MonoBehaviour {
                 throw new System.Exception("No Mesh Filter");
             }
 
-            float maxSqrMagnitude = 0;
-            Vector3 meshSize = Vector3.zero;
-            foreach(MeshFilter mf in meshFilterList) {
-                Vector3 size = mf.sharedMesh.bounds.size;
-                float currentSqrMagnitude = size.sqrMagnitude;
-                if (currentSqrMagnitude > maxSqrMagnitude) {
-                    currentSqrMagnitude = maxSqrMagnitude;
-                    meshSize = size;
-                }
+            Bounds bounds = new Bounds();
+            foreach (MeshFilter mf in meshFilterList) {
+                Bounds meshBound = mf.sharedMesh.bounds;
+                meshBound.center = mf.transform.localPosition;
+                Debug.Log(meshBound);
+                bounds.Encapsulate(meshBound);
             }
-            return meshSize;
+
+
+            refreshMeshSize = false;
+            _meshSize = bounds.size;
+            return _meshSize;
         }
     }
 

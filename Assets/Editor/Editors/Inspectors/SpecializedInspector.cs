@@ -16,7 +16,11 @@ public class SpecializedInspector : Editor {
     }
 
     void OnDisable() {
-        Tools.current = _lastTool;
+        if (_lastTool != Tool.None) {
+            Tools.current = _lastTool;
+        } else {
+            Tools.current = Tool.Move;
+        }
     }
 
 

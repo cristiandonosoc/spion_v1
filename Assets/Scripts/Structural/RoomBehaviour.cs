@@ -48,7 +48,6 @@ public class RoomBehaviour : CustomMonoBehaviour {
         get { return _data.size; }
         set {
             _data.size = value;
-            Refresh();
         }
     }
 

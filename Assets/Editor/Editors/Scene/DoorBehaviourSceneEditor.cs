@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-public partial class RoomBehaviourEditor {
+public partial class DoorBehaviourEditor {
+
     private void OnSceneGUI() {
-        _target = (RoomBehaviour)target;
+        _target = (DoorBehaviour)target;
 
         ShowPosition();
 
@@ -87,6 +88,7 @@ public partial class RoomBehaviourEditor {
         }
         return change;
     }
+
 
 
 
