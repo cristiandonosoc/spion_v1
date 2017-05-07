@@ -24,28 +24,13 @@ public class InstanceManagerBehaviour : SingletonBehaviour<InstanceManagerBehavi
 
     #region ACTIONS
 
-    public void AddRoom() {
+    public RoomBehaviour AddRoom() {
         // We count how many rooms we have
         int roomCount = GetComponentsInChildren<RoomBehaviour>().Length;
         var room = new GameObject().AddComponent<RoomBehaviour>();
         room.name = "Room_" + roomCount;
         room.transform.parent = transform;
-
-        //// 
-        //room.defaultFloorPanel = defaultFloorPanel;
-        //room.defaultFloorPanelCount = defaultFloorPanelCount;
-        //if (createFloorWithRoom) {
-        //    //room.AddFloor();
-        //}
-
-        //room.defaultWall = defaultWall;
-        //room.defaultWallCount = defaultWallCount;
-        //if (createWallsWithRoom) {
-        //    for (int i = 0; i < 4; i++) {
-        //        WallBehaviour wall = room.AddWall(i);
-        //        wall.CalculatePrefabs(recreate: true);
-        //    }
-        //}
+        return room;
     }
 
     #endregion ACTIONS

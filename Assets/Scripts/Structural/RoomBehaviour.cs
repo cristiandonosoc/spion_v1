@@ -83,40 +83,19 @@ public class RoomBehaviour : CustomMonoBehaviour {
     #region ACTIONS
 
     public BlockBehaviour AddBlock() {
+        // We count hoy many blocks we have
+        int blockCount = GetComponentsInChildren<BlockBehaviour>().Length;
         BlockBehaviour block = new GameObject().AddComponent<BlockBehaviour>();
+        block.name = "Block_" + blockCount;
         block.transform.parent = transform;
+        block.transform.localPosition = Vector3.zero;
 
+        // We get the default block model
         var imb = SingletonBehaviour<InstanceManagerBehaviour>.Instance;
         block.BlockModel = imb.defaultBlockModel;
         block.Refresh();
         return block;
     }
-
-    //public FloorBehaviour AddFloor() {
-    //    FloorBehaviour floor = new GameObject().AddComponent<FloorBehaviour>();
-    //    floor.transform.parent = transform;
-    //    floor.PanelModel = defaultFloorPanel;
-    //    floor.PanelCount = defaultFloorPanelCount;
-    //    floor.SnapToRoom();
-    //    floor.CalculatePanels(recreate: true);
-    //    return floor;
-    //}
-
-    //public WallBehaviour AddWall(int wallIndex = -1) {
-    //    var wall = new GameObject().AddComponent<WallBehaviour>();
-    //    wall.transform.parent = transform;
-    //    wall.WallModel = defaultWall;
-    //    wall.WallPanelCount = defaultWallCount;
-    //    wall.SnapToRoom(wallIndex);
-    //    return wall;
-    //}
-
-    //public DoorBehaviour AddDoor() {
-
-    //    DoorBehaviour door = new GameObject().AddComponent<DoorBehaviour>();
-    //    door.transform.parent = transform;
-    //    return door;
-    //}
 
     #endregion ACTIONS
 }

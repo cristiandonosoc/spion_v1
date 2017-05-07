@@ -17,7 +17,8 @@ public partial class InstanceManagerBehaviourEditor : SpecializedInspector {
 
     private void ActionsInspector() {
         if (GUILayout.Button("Add Room")) {
-            _target.AddRoom();
+            RoomBehaviour room = _target.AddRoom();
+            Selection.activeTransform = room.transform;
         }
     }
 
