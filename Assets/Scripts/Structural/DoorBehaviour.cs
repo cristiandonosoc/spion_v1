@@ -113,7 +113,7 @@ public class DoorBehaviour : CustomMonoBehaviour {
     }
 
     private AnimatedModelBehaviour RecreateModel() {
-        foreach(AnimatedModelBehaviour amb in GetComponentsInChildren<AnimatedModelBehaviour>()) {
+        foreach (AnimatedModelBehaviour amb in GetComponentsInChildren<AnimatedModelBehaviour>()) {
             DestroyChildGameObject(amb.gameObject);
         }
         AnimatedModelBehaviour door = Instantiate<AnimatedModelBehaviour>(_doorModel);
@@ -123,4 +123,18 @@ public class DoorBehaviour : CustomMonoBehaviour {
     }
 
     #endregion LIFETIME MANAGEMENT
+
+    #region ACTIONS
+
+    public void Open() {
+        DoorModelInstance.Animator.SetTrigger("OpenTrigger");
+        Collider.enabled = false;
+    }
+
+    public void Close() {
+        DoorModelInstance.Animator.SetTrigger("CloseTrigger");
+        Collider.enabled = true;
+    }
+
+    #endregion ACTIONS
 }

@@ -11,7 +11,21 @@ public partial class DoorBehaviourEditor : SpecializedInspector {
     public override void OnInspectorGUI() {
         _target = (DoorBehaviour)target;
 
+
+        IndentedInspector("Actions", ActionsInspector);
+        HorizontalBreak();
         IndentedInspector("Debug", DebugInspector);
+    }
+
+    private void ActionsInspector() {
+        if (Application.isPlaying) {
+            if (GUILayout.Button("Open Door")) {
+                _target.Open();
+            }
+            if (GUILayout.Button("Close Door")) {
+                _target.Close();
+            }
+        }
     }
 
     private void DebugInspector() {
