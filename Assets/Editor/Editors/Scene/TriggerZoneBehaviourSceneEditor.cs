@@ -3,14 +3,10 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-public partial class RoomBehaviourEditor {
-
-    protected override bool UseCustomEditor() {
-        return true;
-    }
+public partial class TriggerZoneBehaviourEditor {
 
     private void OnSceneGUI() {
-        _target = (RoomBehaviour)target;
+        _target = (TriggerZoneBehaviour)target;
 
         ShowPosition();
 
@@ -92,7 +88,6 @@ public partial class RoomBehaviourEditor {
         }
         return change;
     }
-
 
 
 

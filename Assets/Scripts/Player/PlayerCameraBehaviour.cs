@@ -18,9 +18,6 @@ public class PlayerCameraBehaviour : MonoBehaviour {
 	// Use this for initialization
 	void Start() {
         _player = FindObjectOfType<PlayerBehaviour>();
-        if (_player != null) {
-            Debug.Log("Player found");
-        }
         _camera = GetComponent<Camera>();
         _screenSize = new Vector2(_camera.pixelWidth, _camera.pixelHeight);
 	}

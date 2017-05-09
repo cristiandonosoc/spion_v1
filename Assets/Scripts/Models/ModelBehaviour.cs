@@ -58,7 +58,6 @@ public class ModelBehaviour : MonoBehaviour {
             foreach (MeshFilter mf in meshFilterList) {
                 Bounds meshBound = mf.sharedMesh.bounds;
                 meshBound.center = mf.transform.localPosition;
-                Debug.Log(meshBound);
                 bounds.Encapsulate(meshBound);
             }
 

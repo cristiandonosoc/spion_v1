@@ -10,19 +10,22 @@ public class SpecializedInspector : Editor {
     protected delegate void IndentedInspectorDelegate();
     private Dictionary<string, bool> _foldoutStatus = new Dictionary<string, bool>();
 
+    protected virtual bool UseCustomEditor() { return false; }
+
     void OnEnable() {
+        if (!UseCustomEditor()) { return; }
         _lastTool = Tools.current;
         Tools.current = Tool.None;
     }
 
     void OnDisable() {
+        if (!UseCustomEditor()) { return; }
         if (_lastTool != Tool.None) {
             Tools.current = _lastTool;
         } else {
             Tools.current = Tool.Move;
         }
     }
-
 
     protected void IndentedInspector(IndentedInspectorDelegate inspectorDelegate) {
         EditorGUI.indentLevel++;

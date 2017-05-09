@@ -5,6 +5,14 @@ using UnityEngine;
 
 public class DoorBehaviour : CustomMonoBehaviour {
 
+    public void Test(Collider test) {
+
+    }
+
+    public void Test2(Collider test2) {
+
+    }
+
     #region SYNC DATA
 
     [Serializable]
@@ -22,9 +30,7 @@ public class DoorBehaviour : CustomMonoBehaviour {
 
     public Vector3 Size {
         get { return _data.size; }
-        set {
-            _data.size = value;
-        }
+        set { _data.size = value; }
     }
 
     /// <summary>
