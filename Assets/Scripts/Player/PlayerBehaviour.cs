@@ -10,6 +10,11 @@ public class PlayerBehaviour : MonoBehaviour {
     public float targetDistance = 10;
     public float gravitySpeed = 0.1f;
 
+
+    public int maxHP = 10;
+    public int currentHP = 10;
+
+
     public Vector3 TargetPosition {
         get { return transform.position + target; }
     }

@@ -36,7 +36,7 @@ public class ModelBehaviour : MonoBehaviour {
     private Vector3 _meshSize;
     public Vector3 MeshSize {
         get {
-            if (!refreshMeshSize && _meshSize != null && _meshSize != Vector3.zero) {
+            if (!refreshMeshSize && _meshSize != Vector3.zero) {
                 return _meshSize;
             }
             // TODO(Cristian): Maybe cache this? This shouldn't be called in runtime more than once anyway...
