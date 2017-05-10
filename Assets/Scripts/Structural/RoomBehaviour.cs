@@ -8,7 +8,7 @@ public class RoomBehaviour : CustomMonoBehaviour {
 
     #region UI
 
-    public bool snapVectors;
+    public bool snapVectors = true;
     public bool initialized = false;
 
     public ModelBehaviour defaultFloorPanel;

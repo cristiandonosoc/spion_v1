@@ -5,6 +5,10 @@ using UnityEngine;
 
 public partial class DoorBehaviourEditor {
 
+    protected override bool UseCustomEditor() {
+        return true;
+    }
+
     private void OnSceneGUI() {
         _target = (DoorBehaviour)target;
 

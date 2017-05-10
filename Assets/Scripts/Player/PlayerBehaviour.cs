@@ -38,7 +38,6 @@ public class PlayerBehaviour : MonoBehaviour {
         Debug.DrawLine(transform.position, transform.position + 10 * move.normalized);
         Debug.DrawLine(transform.position, transform.position + 10 * t3.normalized, Color.blue);
 
-
         UpdateGravity();
         if (UpdateMove()) {
             LookAtMove(doMove: true);

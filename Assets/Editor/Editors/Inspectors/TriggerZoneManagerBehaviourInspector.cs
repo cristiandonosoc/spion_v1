@@ -40,9 +40,17 @@ public class TriggerZoneManagerBehaviourEditor : SpecializedInspector {
         mappingFoldoutOpen = EditorGUILayout.Foldout(mappingFoldoutOpen, "Mapping");
         if (mappingFoldoutOpen) {
             EditorGUI.indentLevel++;
-            foreach (StringStringPair mapping in _target.strings) {
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Zone Name");
+            EditorGUILayout.LabelField("Enter Trigger");
+            EditorGUILayout.LabelField("Exit Trigger");
+            EditorGUILayout.EndHorizontal();
+
+
+            foreach (TriggerMapping mapping in _target.TriggerMappings) {
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField(mapping.key);
+                EditorGUILayout.LabelField(mapping.Key);
+                EditorGUILayout.Popup(0, methodNames.ToArray());
                 EditorGUILayout.Popup(0, methodNames.ToArray());
                 EditorGUILayout.EndHorizontal();
             }

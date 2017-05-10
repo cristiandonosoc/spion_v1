@@ -5,6 +5,10 @@ using UnityEngine;
 
 public partial class TriggerZoneBehaviourEditor {
 
+    protected override bool UseCustomEditor() {
+        return true;
+    }
+
     private void OnSceneGUI() {
         _target = (TriggerZoneBehaviour)target;
 
