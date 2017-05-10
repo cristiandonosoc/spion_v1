@@ -6,11 +6,11 @@ using UnityEngine;
 public class DoorBehaviour : CustomMonoBehaviour {
 
     public void Test(Collider test) {
-
+        Debug.Log("Called Test");
     }
 
     public void Test2(Collider test2) {
-
+        Debug.Log("Called Test2");
     }
 
     #region SYNC DATA

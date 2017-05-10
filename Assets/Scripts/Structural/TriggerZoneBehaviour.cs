@@ -65,6 +65,10 @@ public class TriggerZoneBehaviour : CustomMonoBehaviour {
     }
 
 
+    public TriggerZoneDelegate EnterDelegate;
+    public TriggerZoneDelegate ExitDelegate;
+
+
     #endregion UNITY DATA
 
 
@@ -84,11 +88,15 @@ public class TriggerZoneBehaviour : CustomMonoBehaviour {
     #region TRIGGER
 
     void OnTriggerEnter(Collider collider) {
-        Log("ENTER: " + collider);
+        if (EnterDelegate != null) {
+            EnterDelegate(collider);
+        }
     }
 
     void OnTriggerExit(Collider collider) {
-        Log("LEAVE: " + collider);
+        if (ExitDelegate != null) {
+            ExitDelegate(collider);
+        }
     }
 
 

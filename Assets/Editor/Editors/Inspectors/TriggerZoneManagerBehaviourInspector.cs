@@ -23,6 +23,7 @@ public class TriggerZoneManagerBehaviourEditor : SpecializedInspector {
     private void ZonesInspector() {
 
         List<string> methodNames = new List<string>();
+        methodNames.Add("");
         CustomMonoBehaviour[] components = _target.GetComponents<CustomMonoBehaviour>();
 
         foreach (CustomMonoBehaviour component in components) {
@@ -30,7 +31,7 @@ public class TriggerZoneManagerBehaviourEditor : SpecializedInspector {
             MethodInfo[] methods = t.GetMethods();
             foreach (MethodInfo methodInfo in methods) {
                 if (IsMethodCompatibleWithDeletagate<TriggerZoneDelegate>(methodInfo)) {
-                    methodNames.Add(methodInfo.ToString());
+                    methodNames.Add(t.ToString() + "|" + methodInfo.Name);
                 }
             }
         }
@@ -40,18 +41,37 @@ public class TriggerZoneManagerBehaviourEditor : SpecializedInspector {
         mappingFoldoutOpen = EditorGUILayout.Foldout(mappingFoldoutOpen, "Mapping");
         if (mappingFoldoutOpen) {
             EditorGUI.indentLevel++;
+
+            float layoutWidth = InspectorHelpers.GetCurrentLayoutWidth();
+            int elementCount = 3;
+            float elementWidth = layoutWidth / elementCount;
+
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("Zone Name");
-            EditorGUILayout.LabelField("Enter Trigger");
-            EditorGUILayout.LabelField("Exit Trigger");
+            EditorGUILayout.LabelField("Trigger Name", EditorStyles.boldLabel, GUILayout.Width(elementWidth));
+            EditorGUILayout.LabelField("On Enter", EditorStyles.boldLabel, GUILayout.Width(elementWidth));
+            EditorGUILayout.LabelField("On Exit", EditorStyles.boldLabel);
             EditorGUILayout.EndHorizontal();
 
-
             foreach (TriggerMapping mapping in _target.TriggerMappings) {
+                // TODO(Cristian): This could be more efficient
+                int enterIndex = 0;
+                int exitIndex = 0;
+                for (int i = 0; i < methodNames.Count; i++) {
+                    string methodName = methodNames[i];
+                    if (mapping.EnterTrigger == methodName) {
+                        enterIndex = i;
+                    }
+                    if (mapping.ExitTrigger == methodName) {
+                        exitIndex = i;
+                    }
+                }
+
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField(mapping.Key);
-                EditorGUILayout.Popup(0, methodNames.ToArray());
-                EditorGUILayout.Popup(0, methodNames.ToArray());
+                EditorGUILayout.LabelField(mapping.Key, GUILayout.Width(elementWidth));
+                enterIndex = EditorGUILayout.Popup(enterIndex, methodNames.ToArray(), GUILayout.Width(elementWidth));
+                mapping.EnterTrigger = methodNames[enterIndex];
+                exitIndex = EditorGUILayout.Popup(exitIndex, methodNames.ToArray());
+                mapping.ExitTrigger = methodNames[exitIndex];
                 EditorGUILayout.EndHorizontal();
             }
             EditorGUI.indentLevel--;
@@ -65,6 +85,9 @@ public class TriggerZoneManagerBehaviourEditor : SpecializedInspector {
 
     private void DebugInspector() {
         DrawDefaultInspector();
+        if (GUILayout.Button("Refresh Trigger Zones")) {
+            _target.RefreshTriggerZones();
+        }
     }
 
     public bool IsMethodCompatibleWithDeletagate<T>(MethodInfo methodInfo) {
