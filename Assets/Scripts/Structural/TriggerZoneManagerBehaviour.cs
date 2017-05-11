@@ -152,7 +152,6 @@ public class TriggerZoneManagerBehaviour : MonoBehaviour {
 
     private void CompileTriggers() {
         Component[] components = GetComponents<CustomMonoBehaviour>();
-        TriggerZoneBehaviour[] triggerZones = GetComponentsInChildren<TriggerZoneBehaviour>();
         foreach (TriggerMapping mapping in TriggerMappings) {
             mapping.CompileTypeAndMethodInfos();
             foreach (Component component in components) {
@@ -161,23 +160,13 @@ public class TriggerZoneManagerBehaviour : MonoBehaviour {
                     var enterDelegate = (TriggerZoneDelegate)Delegate.CreateDelegate(typeof(TriggerZoneDelegate), 
                                                                                      component, 
                                                                                      mapping.EnterMethodInfo);
-                    foreach (TriggerZoneBehaviour triggerZone in triggerZones) {
-                        if (triggerZone.name == mapping.Key) {
-                            triggerZone.EnterDelegate = enterDelegate;
-                            break;
-                        }
-                    }
+                    mapping.TriggerZone.EnterDelegate = enterDelegate;
                 }
                 if (componentType == mapping.ExitType) {
                     var exitDelegate = (TriggerZoneDelegate)Delegate.CreateDelegate(typeof(TriggerZoneDelegate),
                                                                                     component,
                                                                                     mapping.ExitMethodInfo);
-                    foreach (TriggerZoneBehaviour triggerZone in triggerZones) {
-                        if (triggerZone.name == mapping.Key) {
-                            triggerZone.ExitDelegate = exitDelegate;
-                            break;
-                        }
-                    }
+                    mapping.TriggerZone.ExitDelegate = exitDelegate;
                 }
             }
         }

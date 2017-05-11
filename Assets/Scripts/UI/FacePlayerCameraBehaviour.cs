@@ -4,20 +4,28 @@ using UnityEngine;
 
 public class FacePlayerCameraBehaviour : MonoBehaviour {
 
-    public PlayerCameraBehaviour _playerCamera;
+    public PlayerCameraBehaviour playerCamera;
+    public bool rotateOnlyY = true;
 
     public void Awake() {
-        _playerCamera = FindObjectOfType<PlayerCameraBehaviour>();
+        if (playerCamera == null) {
+            playerCamera = FindObjectOfType<PlayerCameraBehaviour>();
+        }
     }
 
     public void Update() {
-        // We rotate so it always looks to the camera
-        Vector3 v = _playerCamera.transform.position - transform.position;
-        v.x = 0;
-        v.z = 0;
+        if (rotateOnlyY) {
+            // TODO(Cristian): Do lerp here, instead of piggybacking on the camera's lerp
+            Vector3 v = playerCamera.transform.position - transform.position;
+            v.x = 0;
+            v.z = 0;
+            transform.LookAt(playerCamera.transform.position - v);
+            transform.Rotate(0, 180, 0);
+        } else {
+            var fwd = Camera.main.transform.forward;
+            transform.rotation = Quaternion.LookRotation(fwd);
+        }
 
-        transform.LookAt(_playerCamera.transform.position - v);
-        transform.Rotate(0, 180, 0);
     }
 
 }

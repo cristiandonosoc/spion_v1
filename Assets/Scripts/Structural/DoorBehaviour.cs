@@ -83,6 +83,21 @@ public class DoorBehaviour : CustomMonoBehaviour {
         }
     }
 
+    [SerializeField]
+    private OpenBoxBehaviour _openDialog;
+    public OpenBoxBehaviour OpenDialog {
+        get {
+            if (_openDialog == null) {
+                _openDialog = GetComponentInChildren<OpenBoxBehaviour>();
+                if (_openDialog == null) {
+                    _openDialog = new GameObject("OpenDialog").AddComponent<OpenBoxBehaviour>();
+                    _openDialog.transform.parent = transform;
+                }
+            }
+            return _openDialog;
+        }
+    }
+
     #endregion UNITY DATA
 
     #region LIFETIME MANAGEMENT
