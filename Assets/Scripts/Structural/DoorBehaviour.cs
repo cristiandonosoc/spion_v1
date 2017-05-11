@@ -5,12 +5,16 @@ using UnityEngine;
 
 public class DoorBehaviour : CustomMonoBehaviour {
 
+    private OpenBoxBehaviour _dialogInstance;
+
     public void Test(Collider test) {
-        Debug.Log("Called Test");
+        if (_dialogInstance) { return; }
+        _dialogInstance = Instantiate<OpenBoxBehaviour>(OpenDialogPrefab);
+        _dialogInstance.transform.parent = transform;
     }
 
     public void Test2(Collider test2) {
-        Debug.Log("Called Test2");
+        _dialogInstance.Close();
     }
 
     #region SYNC DATA
@@ -84,17 +88,17 @@ public class DoorBehaviour : CustomMonoBehaviour {
     }
 
     [SerializeField]
-    private OpenBoxBehaviour _openDialog;
-    public OpenBoxBehaviour OpenDialog {
+    private OpenBoxBehaviour _openDialogPrefab;
+    public OpenBoxBehaviour OpenDialogPrefab {
         get {
-            if (_openDialog == null) {
-                _openDialog = GetComponentInChildren<OpenBoxBehaviour>();
-                if (_openDialog == null) {
-                    _openDialog = new GameObject("OpenDialog").AddComponent<OpenBoxBehaviour>();
-                    _openDialog.transform.parent = transform;
+            if (_openDialogPrefab == null) {
+                _openDialogPrefab = GetComponentInChildren<OpenBoxBehaviour>();
+                if (_openDialogPrefab == null) {
+                    _openDialogPrefab = new GameObject("OpenDialog").AddComponent<OpenBoxBehaviour>();
+                    _openDialogPrefab.transform.parent = transform;
                 }
             }
-            return _openDialog;
+            return _openDialogPrefab;
         }
     }
 

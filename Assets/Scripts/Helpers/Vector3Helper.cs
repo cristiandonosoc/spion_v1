@@ -2,8 +2,43 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class VectorHelpers {
+/// <summary>
+/// Vector3 extensions to make life a little easier
+/// </summary>
+public static class Vector3Extensions {
+    /// <summary>
+    /// Only change the X coordinate of the Vector
+    /// </summary>
+    /// <param name="v">The Vector to change the X coords</param>
+    /// <param name="x">The new X coord</param>
+    /// <returns>A new vector with the X coord change</returns>
+    public static Vector3 WithX(this Vector3 v, float x) {
+        return new Vector3(x, v.y, v.z);
+    }
 
+    /// <summary>
+    /// Only change the Y coordinate of the Vector
+    /// </summary>
+    /// <param name="v">The Vector to change the Y coords</param>
+    /// <param name="y">The new Y coord</param>
+    /// <returns>A new vector with the Y coord change</returns>
+    public static Vector3 WithY(this Vector3 v, float y) {
+        return new Vector3(v.x, y, v.z);
+    }
+
+    /// <summary>
+    /// Only change the Y coordinate of the Vector
+    /// </summary>
+    /// <param name="v">The Vector to change the Y coords</param>
+    /// <param name="z">The new Y coord</param>
+    /// <returns>A new vector with the Y coord change</returns>
+    public static Vector3 WithZ(this Vector3 v, float z) {
+        return new Vector3(v.x, v.y, z);
+    }
+}
+
+
+public static class VectorHelpers {
     public enum CoordChange {
         NO_CHANGE,
         X,
