@@ -7,14 +7,23 @@ public class DoorBehaviour : CustomMonoBehaviour {
 
     private OpenBoxBehaviour _dialogInstance;
 
-    public void Test(Collider test) {
+    public void EnterDoorZoneTrigger(Collider collider) {
         if (_dialogInstance) { return; }
         _dialogInstance = Instantiate<OpenBoxBehaviour>(OpenDialogPrefab);
         _dialogInstance.transform.parent = transform;
+        _dialogInstance.transform.position = collider.transform.position + new Vector3(-2.5f, 2f, 1);
+        _dialogInstance.fillness = 0;
+
+        // We set the trigger
+        _dialogInstance.player = collider.GetComponent<PlayerBehaviour>();
+        _dialogInstance.door = this;
     }
 
-    public void Test2(Collider test2) {
-        _dialogInstance.Close();
+    public void ExitDoorZoneTrigger(Collider test2) {
+        if (_dialogInstance) {
+            _dialogInstance.EnterClosing();
+        }
+        Close();
     }
 
     #region SYNC DATA
@@ -152,12 +161,23 @@ public class DoorBehaviour : CustomMonoBehaviour {
     #region ACTIONS
 
     public void Open() {
-        DoorModelInstance.Animator.SetTrigger("OpenTrigger");
+        if (DoorModelInstance.Animator.GetBool("Open")) {
+            LogWarning("Trying to open already opened door");
+            return;
+        }
+        DoorModelInstance.Animator.SetBool("Closed", false);
+        DoorModelInstance.Animator.SetBool("Open", true);
         Collider.enabled = false;
     }
 
     public void Close() {
-        DoorModelInstance.Animator.SetTrigger("CloseTrigger");
+        if (DoorModelInstance.Animator.GetBool("Closed")) {
+            LogWarning("Trying to close already closed door");
+            return;
+        }
+
+        DoorModelInstance.Animator.SetBool("Open", false);
+        DoorModelInstance.Animator.SetBool("Closed", true);
         Collider.enabled = true;
     }
 

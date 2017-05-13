@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 222962105150126652}
   - component: {fileID: 114233846804492088}
   m_Layer: 0
-  m_Name: Panel
+  m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -123,8 +123,8 @@ MonoBehaviour:
   m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0.6275859, b: 1, a: 0.392}
+  m_Material: {fileID: 2100000, guid: 1bfc3aaeb31c0c14ba8db7fb65889aff, type: 2}
+  m_Color: {r: 0, g: 0.5862069, b: 1, a: 0.784}
   m_RaycastTarget: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -172,12 +172,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   editorInitialized: 1
+  beingDestroyed: 0
   door: {fileID: 0}
   player: {fileID: 0}
+  _background: {fileID: 114233846804492088}
   _bar: {fileID: 114117539587074872}
-  scale: 1
-  pressChange: 0.05
-  noPressChange: 0.025
+  backgroundColor: {r: 1, g: 1, b: 1, a: 0.472}
+  barColor: {r: 0, g: 0.5862069, b: 1, a: 0.784}
+  _animator: {fileID: 0}
+  fillness: 1
+  fillCompleteTime: 1
+  unfillCompleteTime: 1.75
   xScaleOffset: 1
 --- !u!114 &114233846804492088
 MonoBehaviour:
@@ -190,8 +195,8 @@ MonoBehaviour:
   m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_Material: {fileID: 2100000, guid: 1bfc3aaeb31c0c14ba8db7fb65889aff, type: 2}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.472}
   m_RaycastTarget: 0
   m_OnCullStateChanged:
     m_PersistentCalls:

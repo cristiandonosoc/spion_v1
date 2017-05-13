@@ -50,6 +50,11 @@ public class PlayerBehaviour : MonoBehaviour {
     }
 
     private bool UpdateMove() {
+        if (Input.GetButtonDown("Fire1")) {
+            Debug.Log("Button Down");
+        }
+
+
         var x = Input.GetAxis("Horizontal");
         var z = Input.GetAxis("Vertical");
 
