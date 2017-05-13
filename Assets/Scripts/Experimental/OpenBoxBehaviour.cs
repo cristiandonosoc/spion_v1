@@ -4,12 +4,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class OpenBoxBehaviour : CustomMonoBehaviour {
 
+[AnimationEnum]
+public enum OpenBoxStates {
+    OPENING,
+    ACTIVE,
+    SUCCESS,
+    CLOSING
+}
+
+public class OpenBoxBehaviour : CustomMonoBehaviour {
     public bool beingDestroyed = false;
 
     public DoorBehaviour door;
     public PlayerBehaviour player;
+
+    // Just to keep track of this
+    private OpenBoxStates _currentAnimatorState;
+
 
     [SerializeField]
     private Image _background;
@@ -88,11 +100,14 @@ public class OpenBoxBehaviour : CustomMonoBehaviour {
 
     private void UpdatePlayerInput() {
         if (player == null) { return; }
-        if (Animator.GetBool("Active")) {
+
+        if (_currentAnimatorState == OpenBoxStates.ACTIVE) { 
             if (Input.GetButton("Fire1")) {
                 fillness += (1 / fillCompleteTime) * Time.deltaTime;
                 if (fillness >= 1) {
-                    EnterSuccess();
+                    Animator.SetTrigger("EnterSuccess");
+                    // The animator callback should do this, but it takes *forever*
+                    _currentAnimatorState = OpenBoxStates.SUCCESS;
                 }
             } else {
                 fillness -= (1 / unfillCompleteTime) * Time.deltaTime;
@@ -119,27 +134,22 @@ public class OpenBoxBehaviour : CustomMonoBehaviour {
 
     #region ANIMATION
 
-    public void EnterActive() {
-        Animator.SetBool("Opening", false);
-        Animator.SetBool("Active", true);
-    }
+    public override void AnimationStateChange(AnimationStateEvent animationEvent, int stateValue) {
+        // We cast the value
+        OpenBoxStates openBoxState = (OpenBoxStates)stateValue;
 
-    public void EnterClosing() {
-        Animator.SetBool("Active", false);
-        Animator.SetBool("Closing", true);
-    }
-
-    public void EnterSuccess() {
-        Animator.SetBool("Active", false);
-        Animator.SetBool("Success", true);
-        if (door) {
-            door.Open();
+        if (animationEvent == AnimationStateEvent.ANIMATION_START) {
+            _currentAnimatorState = openBoxState;
+            if (openBoxState == OpenBoxStates.SUCCESS) {
+                // TODO(Cristian): Use Message sending
+                if (door) { door.Open(); }
+            }
+        } else if (animationEvent == AnimationStateEvent.ANIMATION_END) {
+            if (openBoxState == OpenBoxStates.CLOSING) {
+                beingDestroyed = true;
+                Destroy(gameObject);
+            }
         }
-    }
-
-    public void ExitClosing() {
-        beingDestroyed = true;
-        Destroy(gameObject);
     }
 
     #endregion ANIMATION

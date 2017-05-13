@@ -21,10 +21,16 @@ public class DoorBehaviour : CustomMonoBehaviour {
 
     public void ExitDoorZoneTrigger(Collider test2) {
         if (_dialogInstance) {
-            _dialogInstance.EnterClosing();
+            // TODO(Cristian): DEFINITIVELY HERE use Message sending
+            _dialogInstance.Animator.SetTrigger("EnterClosing");
         }
         Close();
     }
+
+
+    public override void ReceiveMessage(string MessageKind) {
+    }
+
 
     #region SYNC DATA
 
@@ -162,7 +168,6 @@ public class DoorBehaviour : CustomMonoBehaviour {
 
     public void Open() {
         if (DoorModelInstance.Animator.GetBool("Open")) {
-            LogWarning("Trying to open already opened door");
             return;
         }
         DoorModelInstance.Animator.SetBool("Closed", false);
@@ -172,7 +177,6 @@ public class DoorBehaviour : CustomMonoBehaviour {
 
     public void Close() {
         if (DoorModelInstance.Animator.GetBool("Closed")) {
-            LogWarning("Trying to close already closed door");
             return;
         }
 

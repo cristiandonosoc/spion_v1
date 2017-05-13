@@ -37,20 +37,9 @@ public abstract class CustomMonoBehaviour : MonoBehaviour {
         Destroy(gameObject);
 #endif
     }
+
+    public virtual void ReceiveMessage(string MessageKind) { }
+
+    public virtual void AnimationStateChange(AnimationStateEvent animationEvent, int stateValue) { }
+
 }
-
-//public abstract class InstanceMonoBehaviour : CustomMonoBehaviour {
-//    public abstract Instance Model { get; }
-//    public abstract void SetModel(Transform parent, Instance model);
-//    public abstract Type InstanceType { get; }
-//    public abstract int UID { get; }
-
-//    /// <summary>
-//    /// IMPORTANT(Cristian): Major hack that enables to detect whether the onDestroy 
-//    /// is called by an explicit action, or when Unity destroys everything to 
-//    /// running/stopping the app.
-//    /// </summary>
-//    protected bool IsAppTransitioning {
-//        get { return (Time.frameCount == 0) && (Time.renderedFrameCount == 0); }
-//    }
-//}
