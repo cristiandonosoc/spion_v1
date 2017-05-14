@@ -3,6 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum DoorBehaviourMessages {
+    OPEN,
+    CLOSE
+}
+
 public class DoorBehaviour : CustomMonoBehaviour {
 
     private OpenBoxBehaviour _dialogInstance;
@@ -26,11 +31,6 @@ public class DoorBehaviour : CustomMonoBehaviour {
         }
         Close();
     }
-
-
-    public override void ReceiveMessage(string MessageKind) {
-    }
-
 
     #region SYNC DATA
 
@@ -166,7 +166,20 @@ public class DoorBehaviour : CustomMonoBehaviour {
 
     #region ACTIONS
 
-    public void Open() {
+    public override void ReceiveMessage(Message message) {
+        if (message.messageType != typeof(DoorBehaviourMessages)) {
+            LogError("Wrong message type received");
+            return;
+        }
+        DoorBehaviourMessages msg = (DoorBehaviourMessages)message.messageValue;
+        if (msg == DoorBehaviourMessages.OPEN) {
+            Open();
+        } else if (msg == DoorBehaviourMessages.CLOSE) {
+            Close();
+        }
+    }
+
+    private void Open() {
         if (DoorModelInstance.Animator.GetBool("Open")) {
             return;
         }
@@ -175,7 +188,7 @@ public class DoorBehaviour : CustomMonoBehaviour {
         Collider.enabled = false;
     }
 
-    public void Close() {
+    private void Close() {
         if (DoorModelInstance.Animator.GetBool("Closed")) {
             return;
         }

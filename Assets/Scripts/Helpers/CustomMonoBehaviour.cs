@@ -1,4 +1,19 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
+
+public struct Message {
+    public Type messageType;
+    public object messageValue;
+
+    public Message(Type messageType, object messageObject) {
+        this.messageType = messageType;
+        this.messageValue = messageObject;
+    }
+
+    public static Message Create<T>(object messageObject) {
+        return new Message(typeof(T), messageObject);
+    }
+}
 
 [ExecuteInEditMode]
 public abstract class CustomMonoBehaviour : MonoBehaviour {
@@ -38,8 +53,13 @@ public abstract class CustomMonoBehaviour : MonoBehaviour {
 #endif
     }
 
-    public virtual void ReceiveMessage(string MessageKind) { }
+    public virtual void ReceiveMessage(Message message) {
+        LogWarning("Received message in base class");
+    }
 
-    public virtual void AnimationStateChange(AnimationStateEvent animationEvent, int stateValue) { }
+
+    public virtual void AnimationStateChange(AnimationStateEvent animationEvent, int stateValue) {
+        LogWarning("Received Animation State change in base class");
+    }
 
 }

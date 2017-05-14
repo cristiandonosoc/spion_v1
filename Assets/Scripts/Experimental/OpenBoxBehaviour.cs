@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 
@@ -142,7 +143,10 @@ public class OpenBoxBehaviour : CustomMonoBehaviour {
             _currentAnimatorState = openBoxState;
             if (openBoxState == OpenBoxStates.SUCCESS) {
                 // TODO(Cristian): Use Message sending
-                if (door) { door.Open(); }
+                if (door) {
+                    door.ReceiveMessage(Message.Create<DoorBehaviourMessages>(DoorBehaviourMessages.OPEN));
+                    //door.Open();
+                }
             }
         } else if (animationEvent == AnimationStateEvent.ANIMATION_END) {
             if (openBoxState == OpenBoxStates.CLOSING) {
