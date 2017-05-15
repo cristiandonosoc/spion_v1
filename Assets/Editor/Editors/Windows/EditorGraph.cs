@@ -12,7 +12,6 @@ public class EditorGraph : EditorWindow {
     }
 
     Material _lineMaterial;
-    private int channel;
 
     void OnEnable() {
         EditorApplication.update += PrivateDelegate;

@@ -142,10 +142,8 @@ public class OpenBoxBehaviour : CustomMonoBehaviour {
         if (animationEvent == AnimationStateEvent.ANIMATION_START) {
             _currentAnimatorState = openBoxState;
             if (openBoxState == OpenBoxStates.SUCCESS) {
-                // TODO(Cristian): Use Message sending
                 if (door) {
-                    door.ReceiveMessage(Message.Create<DoorBehaviourMessages>(DoorBehaviourMessages.OPEN));
-                    //door.Open();
+                    door.ReceiveMessage(Message.Create<DoorBehaviour.MessageKind>(DoorBehaviour.MessageKind.CLOSE, null));
                 }
             }
         } else if (animationEvent == AnimationStateEvent.ANIMATION_END) {

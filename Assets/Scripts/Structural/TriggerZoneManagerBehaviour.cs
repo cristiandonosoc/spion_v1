@@ -4,82 +4,82 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 
+public class MessageKindMarker : Attribute { }
+
+public struct TriggerZoneMessage {
+    public enum MessageKind {
+        ENTER,
+        EXIT
+    }
+
+    [Serializable]
+    public struct MessagePayload {
+        public Collider collider;
+        public Message internalMessage;
+    } 
+}
 
 [Serializable]
-public class TriggerMapping {
+public class TriggerZoneBinding {
     [Serializable]
     public class Data {
-        public string key;
         public TriggerZoneBehaviour triggerZone;
 
-        public string enterTrigger;
-        public Type enterType;
-        public MethodInfo enterMethodInfo;
+        public SerializableType enterBindedType;
+        public string enterKey;
+        public Message enterInternalMessage;
 
-        public string exitTrigger;
-        public Type exitType;
-        public MethodInfo exitMethodInfo;
+        public SerializableType exitBindedType;
+        public string exitKey;
+        public Message exitInternalMessage;
     }
     [SerializeField]
     private Data _data;
 
-    public TriggerMapping(TriggerZoneBehaviour triggerZone) {
+    public TriggerZoneBinding(TriggerZoneBehaviour triggerZone) {
         _data = new Data();
         TriggerZone = triggerZone;
-    }
-
-    public string Key {
-        get { return _data.key; }
     }
 
     public TriggerZoneBehaviour TriggerZone {
         get { return _data.triggerZone; }
         set {
             _data.triggerZone = value;
-            _data.key = _data.triggerZone.name;
         }
     }
 
-    public string EnterTrigger {
-        get { return _data.enterTrigger; }
+    // ENTER
+    public SerializableType EnterBindedType {
+        get { return _data.enterBindedType; }
+        set { _data.enterBindedType = value; }
+    }
+
+    public string EnterKey {
+        get { return _data.enterKey; }
         set {
-            _data.enterTrigger = value;
+            _data.enterKey = value;
         }
     }
 
-    public Type EnterType {
-        get { return _data.enterType; }
+    public Message EnterInternalMessage {
+        get { return _data.enterInternalMessage; }
+        set { _data.enterInternalMessage = value; }
     }
 
-    public MethodInfo EnterMethodInfo {
-        get { return _data.enterMethodInfo; }
+    // EXIT
+    public SerializableType ExitBindedType {
+        get { return _data.exitBindedType; }
+        set { _data.exitBindedType = value; }
     }
 
-    public string ExitTrigger {
-        get { return _data.exitTrigger; }
-        set { _data.exitTrigger = value; }
+    public Message ExitInternalMessage {
+        get { return _data.exitInternalMessage; }
+        set { _data.exitInternalMessage = value; }
     }
 
-    public Type ExitType {
-        get { return _data.exitType; }
-    }
-
-    public MethodInfo ExitMethodInfo {
-        get { return _data.exitMethodInfo; }
-    }
-
-    /// <summary>
-    /// Has to be done on runtime because (apparently),
-    /// Unity won't serialize Type and MethodInfo
-    /// </summary>
-    public void CompileTypeAndMethodInfos() {
-        string[] split = _data.enterTrigger.Split('|');
-        _data.enterType = Type.GetType(split[0]);
-        _data.enterMethodInfo = _data.enterType.GetMethod(split[1]);
-
-        split = _data.exitTrigger.Split('|');
-        _data.exitType = Type.GetType(split[0]);
-        _data.exitMethodInfo = _data.exitType.GetMethod(split[1]);
+    public string ExitKey {
+        get { return _data.exitKey; }
+        set { _data.exitKey = value; }
     }
 }
 
@@ -90,13 +90,16 @@ public delegate void TriggerZoneDelegate(Collider collider);
 public class TriggerZoneManagerBehaviour : MonoBehaviour {
 
     [SerializeField]
-    private List<TriggerMapping> _triggerMappings;
-    public List<TriggerMapping> TriggerMappings {
+    private List<TriggerZoneBinding> _triggerZoneMappings;
+    public List<TriggerZoneBinding> TriggerZoneMappings {
         get {
-            if (_triggerMappings == null) {
-                _triggerMappings = new List<TriggerMapping>();
+            if (_triggerZoneMappings == null) {
+                _triggerZoneMappings = new List<TriggerZoneBinding>();
             }
-            return _triggerMappings;
+            return _triggerZoneMappings;
+        }
+        set {
+            _triggerZoneMappings = value;
         }
     }
 
@@ -110,66 +113,63 @@ public class TriggerZoneManagerBehaviour : MonoBehaviour {
         zone.transform.parent = transform;
         zone.transform.localPosition = Vector3.zero;
 
-        TriggerMappings.Add(new TriggerMapping(zone));
+        TriggerZoneMappings.Add(new TriggerZoneBinding(zone));
 
         return zone;
     }
 
     #endregion ACTIONS
 
-    public void RefreshTriggerZones() {
-        TriggerZoneBehaviour[] zones = GetComponentsInChildren<TriggerZoneBehaviour>();
-        List<TriggerMapping> validMappings = new List<TriggerMapping>();
-        foreach(TriggerMapping mapping in TriggerMappings) {
-            bool found = false;
-            foreach (TriggerZoneBehaviour zone in zones) {
-                if (mapping.TriggerZone == zone) {
-                    // NOTE(Cristian): Will rewrite name (redundant... I know)
-                    mapping.TriggerZone = zone; 
-                    found = true;
-                    break;
-                }
-
-                if (mapping.Key == zone.name) {
-                    mapping.TriggerZone = zone;
-                    found = true;
-                    break;
-                }
-            }
-
-            if (found) {
-                validMappings.Add(mapping);
-            }
-        }
-
-        _triggerMappings = validMappings;
-    }
-
-    public void Awake() {
-        Debug.Log("Trigger Behaviour awake");
+    public void Start() {
         CompileTriggers();
     }
 
     private void CompileTriggers() {
-        Component[] components = GetComponents<CustomMonoBehaviour>();
-        foreach (TriggerMapping mapping in TriggerMappings) {
-            mapping.CompileTypeAndMethodInfos();
-            foreach (Component component in components) {
-                Type componentType = component.GetType();
-                if (componentType == mapping.EnterType) {
-                    var enterDelegate = (TriggerZoneDelegate)Delegate.CreateDelegate(typeof(TriggerZoneDelegate), 
-                                                                                     component, 
-                                                                                     mapping.EnterMethodInfo);
-                    mapping.TriggerZone.EnterDelegate = enterDelegate;
+
+        if (TriggerZoneMappings.Count == 0) { return; }
+
+        // We clear the mappings
+        // TODO(Cristian): Is there a non-stupid way to do this?
+        TriggerZoneBehaviour[] triggerZones = GetComponentsInChildren<TriggerZoneBehaviour>();
+        foreach (TriggerZoneBehaviour triggerZone in triggerZones) {
+            triggerZone.EnterReceivers.Clear();
+            triggerZone.ExitReceivers.Clear();
+        }
+
+
+        CustomMonoBehaviour[] targets = GetComponents<CustomMonoBehaviour>();
+        foreach (TriggerZoneBinding mapping in TriggerZoneMappings) {
+            foreach (CustomMonoBehaviour target in targets) {
+                Type componentType = target.GetType();
+                if (componentType == mapping.EnterBindedType) {
+                    mapping.TriggerZone.EnterReceivers.Add(new TriggerZoneMapping(target, mapping.EnterInternalMessage));
                 }
-                if (componentType == mapping.ExitType) {
-                    var exitDelegate = (TriggerZoneDelegate)Delegate.CreateDelegate(typeof(TriggerZoneDelegate),
-                                                                                    component,
-                                                                                    mapping.ExitMethodInfo);
-                    mapping.TriggerZone.ExitDelegate = exitDelegate;
+
+                if (componentType == mapping.ExitBindedType) {
+                    mapping.TriggerZone.ExitReceivers.Add(new TriggerZoneMapping(target, mapping.ExitInternalMessage));
                 }
             }
         }
+
+        //foreach (TriggerZoneMapping mapping in TriggerMappings) {
+        //    mapping.CompileTypeAndMethodInfos();
+        //    foreach (Component component in components) {
+        //        Type componentType = component.GetType();
+        //        if (componentType == mapping.EnterType) {
+        //            var enterDelegate = (TriggerZoneDelegate)Delegate.CreateDelegate(typeof(TriggerZoneDelegate),
+        //                                                                             component,
+        //                                                                             mapping.EnterMethodInfo);
+        //            mapping.TriggerZone.EnterDelegate = enterDelegate;
+        //        }
+        //        if (componentType == mapping.ExitType) {
+        //            var exitDelegate = (TriggerZoneDelegate)Delegate.CreateDelegate(typeof(TriggerZoneDelegate),
+        //                                                                            component,
+        //                                                                            mapping.ExitMethodInfo);
+        //            mapping.TriggerZone.ExitDelegate = exitDelegate;
+        //        }
+        //    }
+        //}
+
     }
 
 

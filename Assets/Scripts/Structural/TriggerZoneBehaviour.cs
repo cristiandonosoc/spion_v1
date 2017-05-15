@@ -3,6 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public struct TriggerZoneMapping {
+    public CustomMonoBehaviour target;
+    public Message messageToSend;
+
+    public TriggerZoneMapping(CustomMonoBehaviour target, Message messageToSend) {
+        this.target = target;
+        this.messageToSend = messageToSend;
+    }
+}
+
 [ExecuteInEditMode]
 [RequireComponent(typeof(BoxCollider))]
 public class TriggerZoneBehaviour : CustomMonoBehaviour {
@@ -64,9 +74,26 @@ public class TriggerZoneBehaviour : CustomMonoBehaviour {
         }
     }
 
+    // TODO(Cristian): See how can we serialize this
+    private List<TriggerZoneMapping> _enterReceivers;
+    public List<TriggerZoneMapping> EnterReceivers {
+        get {
+            if (_enterReceivers == null) {
+                _enterReceivers = new List<TriggerZoneMapping>();
+            }
+            return _enterReceivers;
+        }
+    }
 
-    public TriggerZoneDelegate EnterDelegate;
-    public TriggerZoneDelegate ExitDelegate;
+    private List<TriggerZoneMapping> _exitReceivers;
+    public List<TriggerZoneMapping> ExitReceivers {
+        get {
+            if (_exitReceivers == null) {
+                _exitReceivers = new List<TriggerZoneMapping>();
+            }
+            return _exitReceivers;
+        }
+    }
 
 
     #endregion UNITY DATA
@@ -88,14 +115,24 @@ public class TriggerZoneBehaviour : CustomMonoBehaviour {
     #region TRIGGER
 
     void OnTriggerEnter(Collider collider) {
-        if (EnterDelegate != null) {
-            EnterDelegate(collider);
+        foreach (TriggerZoneMapping mapping in EnterReceivers) {
+            TriggerZoneMessage.MessagePayload payload = new TriggerZoneMessage.MessagePayload();
+            payload.collider = collider;
+            payload.internalMessage = mapping.messageToSend;
+            Message msg = Message.Create<TriggerZoneMessage.MessageKind>(TriggerZoneMessage.MessageKind.ENTER,
+                                                                         payload);
+            mapping.target.ReceiveMessage(msg);
         }
     }
 
     void OnTriggerExit(Collider collider) {
-        if (ExitDelegate != null) {
-            ExitDelegate(collider);
+        foreach (TriggerZoneMapping mapping in ExitReceivers) {
+            TriggerZoneMessage.MessagePayload payload = new TriggerZoneMessage.MessagePayload();
+            payload.collider = collider;
+            payload.internalMessage = mapping.messageToSend;
+            Message msg = Message.Create<TriggerZoneMessage.MessageKind>(TriggerZoneMessage.MessageKind.EXIT,
+                                                                         payload);
+            mapping.target.ReceiveMessage(msg);
         }
     }
 

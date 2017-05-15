@@ -3,34 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum DoorBehaviourMessages {
-    OPEN,
-    CLOSE
-}
 
 public class DoorBehaviour : CustomMonoBehaviour {
+    [MessageKindMarker]
+    public enum MessageKind {
+        OPEN,
+        CLOSE
+    }
 
     private OpenBoxBehaviour _dialogInstance;
-
-    public void EnterDoorZoneTrigger(Collider collider) {
-        if (_dialogInstance) { return; }
-        _dialogInstance = Instantiate<OpenBoxBehaviour>(OpenDialogPrefab);
-        _dialogInstance.transform.parent = transform;
-        _dialogInstance.transform.position = collider.transform.position + new Vector3(-2.5f, 2f, 1);
-        _dialogInstance.fillness = 0;
-
-        // We set the trigger
-        _dialogInstance.player = collider.GetComponent<PlayerBehaviour>();
-        _dialogInstance.door = this;
-    }
-
-    public void ExitDoorZoneTrigger(Collider test2) {
-        if (_dialogInstance) {
-            // TODO(Cristian): DEFINITIVELY HERE use Message sending
-            _dialogInstance.Animator.SetTrigger("EnterClosing");
-        }
-        Close();
-    }
 
     #region SYNC DATA
 
@@ -166,16 +147,27 @@ public class DoorBehaviour : CustomMonoBehaviour {
 
     #region ACTIONS
 
-    public override void ReceiveMessage(Message message) {
-        if (message.messageType != typeof(DoorBehaviourMessages)) {
-            LogError("Wrong message type received");
-            return;
-        }
-        DoorBehaviourMessages msg = (DoorBehaviourMessages)message.messageValue;
-        if (msg == DoorBehaviourMessages.OPEN) {
-            Open();
-        } else if (msg == DoorBehaviourMessages.CLOSE) {
-            Close();
+    public override void ReceiveMessage(Message msg) {
+        if (msg.type == typeof(MessageKind)) {
+            MessageKind messageKind = (MessageKind)msg.messageKind;
+            if (messageKind == MessageKind.OPEN) {
+                Open();
+            } else if (messageKind == MessageKind.CLOSE) {
+                Close();
+            }
+        } else if (msg.type == typeof(TriggerZoneMessage.MessageKind)) {
+            //TriggerZoneMessage msg = (Message)msg.payload;
+            var triggerKind = (TriggerZoneMessage.MessageKind)msg.messageKind;
+            var triggerPayload = (TriggerZoneMessage.MessagePayload)msg.payload;
+            if (triggerKind == TriggerZoneMessage.MessageKind.ENTER) {
+                Log("{0} -> {1}", msg.type.ToString(), triggerKind);
+                EnterDoorZoneTrigger(triggerPayload.collider);
+            } else if (triggerKind == TriggerZoneMessage.MessageKind.EXIT) {
+                Log("{0} -> {1}", msg.type.ToString(), triggerKind);
+                ExitDoorZoneTrigger(triggerPayload.collider);
+            }
+        } else {
+            LogError("Wrong message type received: {0}", msg.type.ToString());
         }
     }
 
@@ -197,6 +189,28 @@ public class DoorBehaviour : CustomMonoBehaviour {
         DoorModelInstance.Animator.SetBool("Closed", true);
         Collider.enabled = true;
     }
+
+    private void EnterDoorZoneTrigger(Collider collider) {
+        if (_dialogInstance) { return; }
+        _dialogInstance = Instantiate<OpenBoxBehaviour>(OpenDialogPrefab);
+        _dialogInstance.transform.parent = transform;
+        _dialogInstance.transform.position = collider.transform.position + new Vector3(-2.5f, 2f, 1);
+        _dialogInstance.fillness = 0;
+
+        // We set the trigger
+        _dialogInstance.player = collider.GetComponent<PlayerBehaviour>();
+        _dialogInstance.door = this;
+    }
+
+    private void ExitDoorZoneTrigger(Collider test2) {
+        if (_dialogInstance) {
+            // TODO(Cristian): DEFINITIVELY HERE use Message sending
+            _dialogInstance.Animator.SetTrigger("EnterClosing");
+        }
+        Close();
+    }
+
+
 
     #endregion ACTIONS
 }

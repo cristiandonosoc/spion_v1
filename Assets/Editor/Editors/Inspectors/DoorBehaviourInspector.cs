@@ -20,10 +20,10 @@ public partial class DoorBehaviourEditor : SpecializedInspector {
     private void ActionsInspector() {
         if (Application.isPlaying) {
             if (GUILayout.Button("Open Door")) {
-                _target.ReceiveMessage(Message.Create<DoorBehaviourMessages>(DoorBehaviourMessages.OPEN));
+                _target.ReceiveMessage(Message.Create<DoorBehaviour.MessageKind>(DoorBehaviour.MessageKind.OPEN));
             }
             if (GUILayout.Button("Close Door")) {
-                _target.ReceiveMessage(Message.Create<DoorBehaviourMessages>(DoorBehaviourMessages.CLOSE));
+                _target.ReceiveMessage(Message.Create<DoorBehaviour.MessageKind>(DoorBehaviour.MessageKind.CLOSE));
             }
         }
     }
