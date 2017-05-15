@@ -8,7 +8,9 @@ public class DoorBehaviour : CustomMonoBehaviour {
     [MessageKindMarker]
     public enum MessageKind {
         OPEN,
-        CLOSE
+        CLOSE,
+        CREATE_DIALOG,
+        DESTROY_DIALOG
     }
 
     private OpenBoxBehaviour _dialogInstance;
@@ -156,15 +158,20 @@ public class DoorBehaviour : CustomMonoBehaviour {
                 Close();
             }
         } else if (msg.type == typeof(TriggerZoneMessage.MessageKind)) {
-            //TriggerZoneMessage msg = (Message)msg.payload;
             var triggerKind = (TriggerZoneMessage.MessageKind)msg.messageKind;
             var triggerPayload = (TriggerZoneMessage.MessagePayload)msg.payload;
+
+            Message internalMessage = triggerPayload.internalMessage;
+            MessageKind internalMessageKind = (MessageKind)internalMessage.messageKind;
+
             if (triggerKind == TriggerZoneMessage.MessageKind.ENTER) {
-                Log("{0} -> {1}", msg.type.ToString(), triggerKind);
-                EnterDoorZoneTrigger(triggerPayload.collider);
+                if (internalMessageKind == MessageKind.CREATE_DIALOG) {
+                    EnterDoorZoneTrigger(triggerPayload.collider);
+                }
             } else if (triggerKind == TriggerZoneMessage.MessageKind.EXIT) {
-                Log("{0} -> {1}", msg.type.ToString(), triggerKind);
-                ExitDoorZoneTrigger(triggerPayload.collider);
+                if (internalMessageKind == MessageKind.DESTROY_DIALOG) {
+                    ExitDoorZoneTrigger(triggerPayload.collider);
+                }
             }
         } else {
             LogError("Wrong message type received: {0}", msg.type.ToString());
@@ -204,8 +211,7 @@ public class DoorBehaviour : CustomMonoBehaviour {
 
     private void ExitDoorZoneTrigger(Collider test2) {
         if (_dialogInstance) {
-            // TODO(Cristian): DEFINITIVELY HERE use Message sending
-            _dialogInstance.Animator.SetTrigger("EnterClosing");
+            _dialogInstance.ReceiveMessage(Message.Create(OpenBoxBehaviour.MessageKind.CLOSE));
         }
         Close();
     }

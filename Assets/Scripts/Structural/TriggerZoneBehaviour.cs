@@ -119,8 +119,7 @@ public class TriggerZoneBehaviour : CustomMonoBehaviour {
             TriggerZoneMessage.MessagePayload payload = new TriggerZoneMessage.MessagePayload();
             payload.collider = collider;
             payload.internalMessage = mapping.messageToSend;
-            Message msg = Message.Create<TriggerZoneMessage.MessageKind>(TriggerZoneMessage.MessageKind.ENTER,
-                                                                         payload);
+            Message msg = Message.Create(TriggerZoneMessage.MessageKind.ENTER, payload);
             mapping.target.ReceiveMessage(msg);
         }
     }
@@ -130,8 +129,7 @@ public class TriggerZoneBehaviour : CustomMonoBehaviour {
             TriggerZoneMessage.MessagePayload payload = new TriggerZoneMessage.MessagePayload();
             payload.collider = collider;
             payload.internalMessage = mapping.messageToSend;
-            Message msg = Message.Create<TriggerZoneMessage.MessageKind>(TriggerZoneMessage.MessageKind.EXIT,
-                                                                         payload);
+            Message msg = Message.Create(TriggerZoneMessage.MessageKind.EXIT, payload);
             mapping.target.ReceiveMessage(msg);
         }
     }

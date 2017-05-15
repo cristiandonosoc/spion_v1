@@ -135,6 +135,22 @@ public class OpenBoxBehaviour : CustomMonoBehaviour {
 
     #region ANIMATION
 
+    [MessageKindMarker]
+    public enum MessageKind {
+        CLOSE
+    }
+
+    public override void ReceiveMessage(Message msg) {
+        if (msg.type == typeof(MessageKind)) {
+            MessageKind messageKind = (MessageKind)msg.messageKind;
+            if (messageKind == MessageKind.CLOSE) {
+                Animator.SetTrigger("EnterClosing");
+            }
+        } else {
+            LogError("Received wrong MessageKind: {0}", msg.type.ToString());
+        }
+    }
+
     public override void AnimationStateChange(AnimationStateEvent animationEvent, int stateValue) {
         // We cast the value
         OpenBoxStates openBoxState = (OpenBoxStates)stateValue;
@@ -143,7 +159,7 @@ public class OpenBoxBehaviour : CustomMonoBehaviour {
             _currentAnimatorState = openBoxState;
             if (openBoxState == OpenBoxStates.SUCCESS) {
                 if (door) {
-                    door.ReceiveMessage(Message.Create<DoorBehaviour.MessageKind>(DoorBehaviour.MessageKind.OPEN));
+                    door.ReceiveMessage(Message.Create(DoorBehaviour.MessageKind.OPEN));
                 }
             }
         } else if (animationEvent == AnimationStateEvent.ANIMATION_END) {

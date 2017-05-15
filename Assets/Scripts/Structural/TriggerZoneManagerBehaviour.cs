@@ -150,27 +150,5 @@ public class TriggerZoneManagerBehaviour : MonoBehaviour {
                 }
             }
         }
-
-        //foreach (TriggerZoneMapping mapping in TriggerMappings) {
-        //    mapping.CompileTypeAndMethodInfos();
-        //    foreach (Component component in components) {
-        //        Type componentType = component.GetType();
-        //        if (componentType == mapping.EnterType) {
-        //            var enterDelegate = (TriggerZoneDelegate)Delegate.CreateDelegate(typeof(TriggerZoneDelegate),
-        //                                                                             component,
-        //                                                                             mapping.EnterMethodInfo);
-        //            mapping.TriggerZone.EnterDelegate = enterDelegate;
-        //        }
-        //        if (componentType == mapping.ExitType) {
-        //            var exitDelegate = (TriggerZoneDelegate)Delegate.CreateDelegate(typeof(TriggerZoneDelegate),
-        //                                                                            component,
-        //                                                                            mapping.ExitMethodInfo);
-        //            mapping.TriggerZone.ExitDelegate = exitDelegate;
-        //        }
-        //    }
-        //}
-
     }
-
-
 }

@@ -110,8 +110,8 @@ public struct Message : ISerializationCallbackReceiver {
     /// The receiver has to be able to correclty cast it back from object.
     /// </param>
     /// <returns></returns>
-    public static Message Create<T>(object messageKind, object messageObject = null) {
-        return new Message(typeof(T), (int)messageKind, messageObject);
+    public static Message Create<T>(T messageKind, object messageObject = null) {
+        return new Message(typeof(T), (int)(object)messageKind, messageObject);
     }
 
     public void OnBeforeSerialize() {
