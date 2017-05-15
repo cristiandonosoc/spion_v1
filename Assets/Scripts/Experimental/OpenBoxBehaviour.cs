@@ -143,7 +143,7 @@ public class OpenBoxBehaviour : CustomMonoBehaviour {
             _currentAnimatorState = openBoxState;
             if (openBoxState == OpenBoxStates.SUCCESS) {
                 if (door) {
-                    door.ReceiveMessage(Message.Create<DoorBehaviour.MessageKind>(DoorBehaviour.MessageKind.CLOSE, null));
+                    door.ReceiveMessage(Message.Create<DoorBehaviour.MessageKind>(DoorBehaviour.MessageKind.OPEN));
                 }
             }
         } else if (animationEvent == AnimationStateEvent.ANIMATION_END) {
