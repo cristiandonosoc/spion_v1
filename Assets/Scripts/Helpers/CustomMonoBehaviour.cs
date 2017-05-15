@@ -4,165 +4,43 @@ using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 
 
-[Serializable]
-public struct SerializableType : ISerializationCallbackReceiver {
-    public Type type;
-
-    [SerializeField]
-    private string _typeString;
-
-    public SerializableType(Type type) {
-        this.type = type;
-        if (type != null) {
-            _typeString = type.FullName;
-        } else {
-            _typeString = null;
-        }
-    }
-
-    public static implicit operator SerializableType(Type t) {
-        return new SerializableType(t);
-    }
-
-    public static bool operator ==(SerializableType t1, SerializableType t2) {
-        return t1.type == t2.type;
-    }
-
-    public static bool operator !=(SerializableType t1, SerializableType t2) {
-        return t1.type != t2.type;
-    }
-
-    public override bool Equals(object obj) {
-        return base.Equals(obj);
-    }
-
-    public override int GetHashCode() {
-        return base.GetHashCode();
-    }
-
-    public void OnBeforeSerialize() {
-        if (type != null) {
-            _typeString = type.FullName;
-        } else {
-            _typeString = null;
-        }
-    }
-
-    public void OnAfterDeserialize() {
-        if (_typeString != null) {
-            type = Type.GetType(_typeString);
-        } else {
-            type = null;
-        }
-    }
-
-    public static bool operator ==(SerializableType st, Type t) {
-        bool result = st.type == t;
-        return result;
-    }
-
-    public static bool operator !=(SerializableType st, Type t) {
-        return st.type != t;
-    }
-
-    public static bool operator ==(Type t, SerializableType st) {
-        bool result = st.type == t;
-        return result;
-    }
-
-    public static bool operator !=(Type t, SerializableType st) {
-        return st.type != t;
-    }
-
-    public override string ToString() {
-        return type.ToString();
-    }
-}
-
-[Serializable]
-public struct Message : ISerializationCallbackReceiver {
-    public SerializableType type;
-    public int messageKind;
-    public object payload;
-
-    // We require this for serialization
-    [SerializeField]
-    private byte[] _serializedPayload;
-
-    public Message(Type type, int messageKind, object payload) {
-        this.type = type;
-        this.messageKind = messageKind;
-        this.payload = payload;
-        _serializedPayload = null;
-    }
-
-    /// <summary>
-    /// Creates a Message Object of a certain Type. The type is the class supposed
-    /// to receive the message. All the kinds are payload are generically serialized
-    /// so that anyone can use this system.
-    /// This means that both the sender and the receiver have to be able to correctly
-    /// cast the message.
-    /// </summary>
-    /// <typeparam name="MessageKindMarker">The Type of the enum associated with this message.</typeparam>
-    /// <param name="messageKind">Enum value associated with the message type. Will be casted to int internally.</param>
-    /// <param name="messageObject">
-    /// A generic payload associated with the message. Can be null.
-    /// The receiver has to be able to correclty cast it back from object.
-    /// </param>
-    /// <returns></returns>
-    public static Message Create<T>(T messageKind, object messageObject = null) {
-        return new Message(typeof(T), (int)(object)messageKind, messageObject);
-    }
-
-    public void OnBeforeSerialize() {
-        if (payload == null) {
-            _serializedPayload = null;
-            return;
-        }
-
-        BinaryFormatter bf = new BinaryFormatter();
-        using (MemoryStream ms = new MemoryStream()) {
-            bf.Serialize(ms, payload);
-            _serializedPayload = ms.ToArray();
-        }
-    }
-
-    public void OnAfterDeserialize() {
-        if ((_serializedPayload == null) || 
-            (_serializedPayload.Length == 0)) {
-            return;
-        }
-        BinaryFormatter bf = new BinaryFormatter();
-        using (MemoryStream ms = new MemoryStream()) {
-            ms.Write(_serializedPayload, 0, _serializedPayload.Length);
-            payload = bf.Deserialize(ms);
-        }
-    }
-}
-
+/// <summary>
+/// Base class for important elements in within the game.
+/// Mainly CustomMonoBehaviour gives:
+/// 1. Editor/PlayMode Awake methods. This is mainly used for editor code that is run on editor runtime.
+/// 2. ReceiveMessage: A generic method to receive Messages. This is the official way of loosely-coupled
+///    communication between objects. 
+///    See Message for more information.
+/// 3. AnimationStateChange. This is a callback called by AnimationState to owning monobehaviours of an Animator.
+///    This is useful for having better control on when a state changes.
+///    See AnimationState and AnimationStateEvent for more information.
+/// </summary>
 [ExecuteInEditMode]
 public abstract class CustomMonoBehaviour : MonoBehaviour {
 
     public void Log(string message, params object[] args) {
-        Debug.Log(name + ": " + string.Format(message, args));
+        Debug.Log(name + " => " + string.Format(message, args));
     }
 
     public void LogError(string message, params object[] args) {
-        Debug.LogError(name + ": " + string.Format(message, args));
+        Debug.LogError(name + " => " + string.Format(message, args));
     }
 
     public void LogWarning(string message, params object[] args) {
-        Debug.LogWarning(name + ": " + string.Format(message, args));
+        Debug.LogWarning(name + " => " + string.Format(message, args));
     }
 
     public bool editorInitialized = false;
 
     public void Awake() {
+        if (Application.isPlaying) {
+            PlayModeAwake();
+            return;
+        }
+
         if (!editorInitialized) {
             EditorAwake();
             editorInitialized = true;
-        } else {
-            PlayModeAwake();
         }
     }
 
@@ -170,6 +48,13 @@ public abstract class CustomMonoBehaviour : MonoBehaviour {
     protected abstract void PlayModeAwake();
     public abstract void Refresh();
 
+    /// <summary>
+    /// A simple wrapper so that it differentiates code if on editor on not.
+    /// This is because we have to delete gameObjects differently depending on 
+    /// whether we are on EDITOR mode or on GAME mode.
+    /// This method aims to unify the flow.
+    /// </summary>
+    /// <param name="gameObject"></param>
     protected void DestroyChildGameObject(GameObject gameObject) {
 #if UNITY_EDITOR
         DestroyImmediate(gameObject);

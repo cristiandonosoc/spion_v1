@@ -53,8 +53,8 @@ public class AnimationStateInspector : SpecializedInspector{
 
         // Now we get the states for the current enum type
         int currentInEnumIndex = 0;
-        Array enumValues = Enum.GetValues(_target.enumType);
-        string[] enumOptionNames = Enum.GetNames(_target.enumType);
+        Array enumValues = Enum.GetValues(_target.enumType.type);
+        string[] enumOptionNames = Enum.GetNames(_target.enumType.type);
         GUIContent[] enumOptionLabels = new GUIContent[enumValues.Length];
         for (int i = 0; i < enumValues.Length; i++) {
             enumOptionLabels[i] = new GUIContent(enumOptionNames[i]);
