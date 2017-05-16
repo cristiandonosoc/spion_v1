@@ -103,7 +103,7 @@ public class OpenBoxBehaviour : CustomMonoBehaviour {
         if (player == null) { return; }
 
         if (_currentAnimatorState == OpenBoxStates.ACTIVE) { 
-            if (Input.GetButton("Fire1")) {
+            if (Input.GetButton("Y")) {
                 fillness += (1 / fillCompleteTime) * Time.deltaTime;
                 if (fillness >= 1) {
                     Animator.SetTrigger("EnterSuccess");
