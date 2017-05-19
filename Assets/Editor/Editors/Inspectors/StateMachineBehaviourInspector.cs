@@ -19,17 +19,18 @@ public class StateMachineBehaviourInspector : SpecializedInspector {
     Type[] enumTypes;
     string[] enumNames;
 
-    int[] enumValues;
+    int[] stateValues;
     string[] stateNames;
-    Dictionary<int, string> enumMap;
+    Dictionary<int, string> stateValueNameMap;
 
     private void RefreshData() {
         enumTypes = TypeHelpers.GetAttributedTypes(typeof(StateMachineEnum));
         enumNames = TypeHelpers.GetNames(enumTypes);
-        if (_target.StateEnumType.type != null) {
-            enumValues = TypeHelpers.GetEnumValues(_target.StateEnumType.type);
-            stateNames = Enum.GetNames(_target.StateEnumType.type);
-            enumMap = TypeHelpers.GetEnumValueNameMap(_target.StateEnumType.type);
+
+        if (_target.StateEnumType != null) {
+            stateValues = TypeHelpers.GetEnumValues(_target.StateEnumType);
+            stateNames = Enum.GetNames(_target.StateEnumType);
+            stateValueNameMap = TypeHelpers.GetEnumValueNameMap(_target.StateEnumType);
         }
     }
 
@@ -39,15 +40,10 @@ public class StateMachineBehaviourInspector : SpecializedInspector {
             RefreshData();
         }
 
-        int currentStateEnumIndex = -1;
-        for (int i = 0; i < enumTypes.Length; i++) {
-            if (enumTypes[i] == _target.StateEnumType) {
-                currentStateEnumIndex = i;
-                break;
-            }
-        }
+        _target.Name = EditorGUILayout.TextField("State Machine Name", _target.Name);
 
-        int newStateEnumIndex = EditorGUILayout.Popup("State Enum", currentStateEnumIndex, enumNames);
+        int currentStateEnumIndex = TypeHelpers.GetIndexInArray(_target.StateEnumType, enumTypes);
+        int newStateEnumIndex = EditorGUILayout.Popup("State Machine Enum", currentStateEnumIndex, enumNames);
         if (newStateEnumIndex != currentStateEnumIndex) {
             if ((currentStateEnumIndex == -1) ||
                 EditorUtility.DisplayDialog("State Machine Enum Change",
@@ -65,13 +61,19 @@ public class StateMachineBehaviourInspector : SpecializedInspector {
         if (newStateEnumIndex == -1) {
             EditorGUILayout.HelpBox("Please select a state", MessageType.Info);
         } else {
+            int currentStateIndex = TypeHelpers.GetIndexInArray(_target.CurrentInternalState, stateValues);
+            int newStateIndex = EditorGUILayout.Popup("Current State", currentStateIndex, stateNames);
+            if (newStateIndex != currentStateIndex) {
+                _target.CurrentInternalState = stateValues[newStateIndex];
+            }
+
             IndentedInspector("Transitions", TransitionsInspector);
         }
     }
 
     private void TransitionsInspector() {
 
-        if (enumValues == null) {
+        if (stateValues == null) {
             RefreshData();
         }
 
@@ -84,8 +86,8 @@ public class StateMachineBehaviourInspector : SpecializedInspector {
         float elementWidth = layoutWidth / elementCount - 3;
         GUILayoutOption widthOption = GUILayout.Width(elementWidth);
 
-        for (int i = 0; i < enumValues.Length; i++) {
-            int state = enumValues[i];
+        for (int i = 0; i < stateValues.Length; i++) {
+            int state = stateValues[i];
             StateTransitions stateTransitions = _target.GetStateTransition(state);
             EditorGUILayout.BeginHorizontal();
             {
@@ -100,7 +102,7 @@ public class StateMachineBehaviourInspector : SpecializedInspector {
                         foreach (int transition in stateTransitions.transitions) {
                             EditorGUILayout.BeginHorizontal(widthOption);
                             float halfWidth = elementWidth / 2 - 3;
-                            EditorGUILayout.LabelField(enumMap[transition], GUILayout.Width(halfWidth));
+                            EditorGUILayout.LabelField(stateValueNameMap[transition], GUILayout.Width(halfWidth));
                             if (GUILayout.Button("Remove", GUILayout.Width(halfWidth))) {
                                 transitionToRemove = transition;
                             }
@@ -115,7 +117,7 @@ public class StateMachineBehaviourInspector : SpecializedInspector {
 
                 int newIndex = EditorGUILayout.Popup(-1, stateNames, widthOption);
                 if (newIndex != -1) {
-                    stateTransitions.AddTransition(enumValues[newIndex]);
+                    stateTransitions.AddTransition(stateValues[newIndex]);
                 }
             }
             EditorGUILayout.EndHorizontal();

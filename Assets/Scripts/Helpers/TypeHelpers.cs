@@ -45,4 +45,39 @@ public static class TypeHelpers {
         }
         return enumMap;
     }
+
+    /// <summary>
+    /// Searches the element in the array. Uses the defined == operator.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="obj"></param>
+    /// <param name="array"></param>
+    /// <returns>0-based index if found, -1 otherwise.</returns>
+    public static int GetIndexInArray<T, U>(T obj, U[] array) where T : class
+                                                              where U : class {
+        int index = -1;
+        for (int i = 0; i < array.Length; i++) {
+            if (array[i] == obj) {
+                return i;
+            }
+        }
+        return index;
+    }
+
+    /// <summary>
+    /// Searches the element in the array. Uses the defined == operator.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="obj"></param>
+    /// <param name="array"></param>
+    /// <returns>0-based index if found, -1 otherwise.</returns>
+    public static int GetIndexInArray(int obj, int[] array) {
+        int index = -1;
+        for (int i = 0; i < array.Length; i++) {
+            if (array[i] == obj) {
+                return i;
+            }
+        }
+        return index;
+    }
 }

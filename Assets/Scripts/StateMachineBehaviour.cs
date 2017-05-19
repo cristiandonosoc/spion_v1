@@ -50,6 +50,7 @@ public class StateMachineBehaviour : CustomMonoBehaviour {
 
     [Serializable]
     public class Data {
+        public string name;
         public SerializableType enumType;
         public List<StateTransitions> stateTransitions;
         public int currentState = 0;
@@ -66,8 +67,14 @@ public class StateMachineBehaviour : CustomMonoBehaviour {
         }
     }
 
-    public SerializableType StateEnumType {
-        get { return InternalData.enumType;  }
+    public string Name {
+        get { return InternalData.name; }
+        set { InternalData.name = value; }
+
+    }
+
+    public Type StateEnumType {
+        get { return InternalData.enumType.type;  }
     }
 
     public List<StateTransitions> StateTransitions {
@@ -86,6 +93,15 @@ public class StateMachineBehaviour : CustomMonoBehaviour {
             }
         }
         return null;
+    }
+
+    /// <summary>
+    /// This shouldn't be used in gameplay, only for editor purposes.
+    /// Use ChangeState instead.
+    /// </summary>
+    public int CurrentInternalState {
+        get { return InternalData.currentState; }
+        set { InternalData.currentState = value; }
     }
 
     public StateTransitions CurrentStateTransition {
@@ -125,9 +141,15 @@ public class StateMachineBehaviour : CustomMonoBehaviour {
     }
 
     // TODO(Cristian): Is this really expensive?
-    public T GetCurrentState<T>() where T : IConvertible {
+    public T GetCurrentState<T>(bool ignoreCheck = false) where T : IConvertible {
+        if (!ignoreCheck) { TypeCheck(typeof(T)); }
+        return (T)(object)InternalData.currentState;
+    }
+
+    public bool IsCurrentState<T>(T state) where T : IConvertible {
         TypeCheck(typeof(T));
-        return (T)Convert.ChangeType(InternalData.currentState, typeof(T));
+        int intState = state.ToInt32(null);
+        return InternalData.currentState == intState;
     }
 
     public bool AddTransition<T>(T fromState, T toState) where T : IConvertible {
@@ -140,10 +162,24 @@ public class StateMachineBehaviour : CustomMonoBehaviour {
         return transitions.AddTransition(toInt);
     }
 
-    public bool HasCurrentTransition<T>(T toState) where T : IConvertible {
-        TypeCheck(typeof(T));
+    public bool HasCurrentTransition<T>(T toState, bool ignoreCheck = false) where T : IConvertible {
+        if (!ignoreCheck) { TypeCheck(typeof(T)); }
         int toInt = toState.ToInt32(null);
         return CurrentStateTransition.HasTransition(toInt);
+    }
+
+    public bool ChangeState<T>(T toState) where T :IConvertible {
+        TypeCheck(typeof(T));
+        int toInt = toState.ToInt32(null);
+        if (!HasCurrentTransition(toState, ignoreCheck: true)) {
+            T currentState = GetCurrentState<T>(ignoreCheck: true);
+            LogError("State Machine \"{0}\" [Type: {1}]: No transition from {2} -> {3}",
+                     Name, typeof(T), currentState, toState);
+
+            return false;
+        }
+        InternalData.currentState = toInt;
+        return true;
     }
 
 

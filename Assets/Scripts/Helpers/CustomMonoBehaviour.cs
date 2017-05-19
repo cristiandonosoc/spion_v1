@@ -18,16 +18,23 @@ using UnityEngine;
 [ExecuteInEditMode]
 public abstract class CustomMonoBehaviour : MonoBehaviour {
 
-    public void Log(string message, params object[] args) {
-        Debug.Log(name + " => " + string.Format(message, args));
+    private string FormatMessage(string message, params object[] args) {
+        return string.Format("[Game Object: \"{0}\", Component: \"{1}\"] => {2}",
+                             gameObject.name,
+                             GetType(),
+                             string.Format(message, args));
     }
 
-    public void LogError(string message, params object[] args) {
-        Debug.LogError(name + " => " + string.Format(message, args));
+    public void Log(string message, params object[] args) {
+        Debug.Log(FormatMessage(message, args));
     }
 
     public void LogWarning(string message, params object[] args) {
-        Debug.LogWarning(name + " => " + string.Format(message, args));
+        Debug.LogWarning(FormatMessage(message, args));
+    }
+
+    public void LogError(string message, params object[] args) {
+        Debug.LogError(FormatMessage(message, args));
     }
 
     public bool editorInitialized = false;

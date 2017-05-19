@@ -12,8 +12,8 @@ public class PlayerBehaviour : MonoBehaviour {
 
     [StateMachineEnum]
     public enum TestEnum {
-        TEST
-
+        TEST = 0,
+        TEST1 = 1
     }
 
     public float speed = 0.1f;
@@ -32,11 +32,13 @@ public class PlayerBehaviour : MonoBehaviour {
     }
 
     private CharacterController _characterController;
-    Camera _playerCamera;
+    private Camera _playerCamera;
+    private StateMachineBehaviour _stateMachine;
 
     public void Awake() {
         _characterController = GetComponent<CharacterController>();
         _playerCamera = FindObjectOfType<PlayerCameraBehaviour>().GetComponent<Camera>();
+        _stateMachine = GetComponent<StateMachineBehaviour>();
     }
 
     public void Start() {
@@ -50,8 +52,20 @@ public class PlayerBehaviour : MonoBehaviour {
         if (UpdateMove()) {
             LookAtMove(doMove: true);
         }
+
+        UpdateControls();
+
     }
 
+    private void UpdateControls() {
+        if (Input.GetButtonDown("A")) {
+            if (_stateMachine.IsCurrentState(States.NORMAL)) {
+                if (_stateMachine.ChangeState(States.DASH)) {
+                    Debug.Log("Changed state");
+                }
+            }
+        }
+    }
     private void UpdateGravity() {
         Vector3 gravity = new Vector3(0, -gravitySpeed, 0);
         _characterController.Move(gravity);
