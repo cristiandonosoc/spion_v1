@@ -27,19 +27,12 @@ public class AnimationStateInspector : SpecializedInspector{
     private void StateInspector() {
 
         // We get the enum types
-        List<Type> enumTypes = new List<Type>();
-        foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies()) {
-            foreach (Type type in assembly.GetTypes()) {
-                if (type.GetCustomAttributes(typeof(AnimationEnum), true).Length > 0) {
-                    enumTypes.Add(type);
-                }
-            }
-        }
+        Type[] enumTypes = TypeHelpers.GetAttributedTypes(typeof(AnimationEnum));
 
         // We get the strings end index
         int currentStateEnumIndex = 0;
-        GUIContent[] enumNames = new GUIContent[enumTypes.Count];
-        for (int i = 0; i < enumTypes.Count; i++) {
+        GUIContent[] enumNames = new GUIContent[enumTypes.Length];
+        for (int i = 0; i < enumTypes.Length; i++) {
             enumNames[i] = new GUIContent(enumTypes[i].ToString());
             if (_target.enumType == enumTypes[i]) {
                 currentStateEnumIndex = i;

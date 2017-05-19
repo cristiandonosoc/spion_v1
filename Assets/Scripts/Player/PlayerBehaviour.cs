@@ -4,6 +4,18 @@ using UnityEngine;
 
 public class PlayerBehaviour : MonoBehaviour {
 
+    [StateMachineEnum]
+    public enum States {
+        NORMAL = 0,
+        DASH = 1
+    }
+
+    [StateMachineEnum]
+    public enum TestEnum {
+        TEST
+
+    }
+
     public float speed = 0.1f;
     public Vector3 move = new Vector3(0, 0, -1);
     public Vector3 target;
@@ -32,11 +44,7 @@ public class PlayerBehaviour : MonoBehaviour {
     }
 
     void Update() {
-        Vector2 t = new Vector2(move.x, move.z);
-        Vector2 t2 = VectorHelpers.SnapToAngle(t, 45f);
-        Vector3 t3 = new Vector3(t2.x, 0, t2.y);
         Debug.DrawLine(transform.position, transform.position + 10 * move.normalized);
-        Debug.DrawLine(transform.position, transform.position + 10 * t3.normalized, Color.blue);
 
         UpdateGravity();
         if (UpdateMove()) {

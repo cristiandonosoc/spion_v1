@@ -36,7 +36,7 @@ public enum AnimationStateEvent {
 ///
 /// The first example of using this is OpenBoxBehaviour.
 /// </summary>
-public class AnimationState : StateMachineBehaviour {
+public class AnimationState : UnityEngine.StateMachineBehaviour {
 
     public SerializableType enumType;
     public int enumValue;
