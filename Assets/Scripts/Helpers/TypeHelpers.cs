@@ -6,11 +6,15 @@ using UnityEngine;
 
 public static class TypeHelpers {
 
+    public static bool TypeHasAttribute(Type type, Type attributeType) {
+        return (type.GetCustomAttributes(attributeType, false).Length > 0);
+    }
+
     public static Type[] GetAttributedTypes(Type attributeType) {
         List<Type> types = new List<Type>();
         foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies()) {
             foreach (Type type in assembly.GetTypes()) {
-                if (type.GetCustomAttributes(attributeType, true).Length > 0) {
+                if (TypeHasAttribute(type, attributeType)) {
                     types.Add(type);
                 }
             }

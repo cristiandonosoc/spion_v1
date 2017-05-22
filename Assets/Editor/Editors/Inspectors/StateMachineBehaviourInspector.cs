@@ -61,10 +61,10 @@ public class StateMachineBehaviourInspector : SpecializedInspector {
         if (newStateEnumIndex == -1) {
             EditorGUILayout.HelpBox("Please select a state", MessageType.Info);
         } else {
-            int currentStateIndex = TypeHelpers.GetIndexInArray(_target.CurrentInternalState, stateValues);
+            int currentStateIndex = TypeHelpers.GetIndexInArray(_target.CurrentInternalStateRepresentation, stateValues);
             int newStateIndex = EditorGUILayout.Popup("Current State", currentStateIndex, stateNames);
             if (newStateIndex != currentStateIndex) {
-                _target.CurrentInternalState = stateValues[newStateIndex];
+                _target.CurrentInternalStateRepresentation = stateValues[newStateIndex];
             }
 
             IndentedInspector("Transitions", TransitionsInspector);
@@ -88,7 +88,7 @@ public class StateMachineBehaviourInspector : SpecializedInspector {
 
         for (int i = 0; i < stateValues.Length; i++) {
             int state = stateValues[i];
-            StateTransitions stateTransitions = _target.GetStateTransition(state);
+            StateTransitions stateTransitions = _target.GetStateTransitionsForState(state);
             EditorGUILayout.BeginHorizontal();
             {
                 EditorGUILayout.LabelField(stateNames[i], widthOption);

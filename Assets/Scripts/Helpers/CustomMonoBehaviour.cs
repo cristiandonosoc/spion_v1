@@ -51,9 +51,9 @@ public abstract class CustomMonoBehaviour : MonoBehaviour {
         }
     }
 
-    protected abstract void EditorAwake();
-    protected abstract void PlayModeAwake();
-    public abstract void Refresh();
+    protected virtual void EditorAwake() { }
+    protected virtual void PlayModeAwake() { }
+    public virtual void Refresh() { }
 
     /// <summary>
     /// A simple wrapper so that it differentiates code if on editor on not.
