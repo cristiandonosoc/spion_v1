@@ -17,7 +17,8 @@ public class PlayerBehaviour : MonoBehaviour {
     }
 
     public float speed = 0.1f;
-    public Vector3 move = new Vector3(0, 0, -1);
+    public Vector3 moveDirection = new Vector3(0, 0, -1);
+    public Vector3 lookDirection;
     public Vector3 target;
     public float targetDistance = 10;
     public float gravitySpeed = 0.1f;
@@ -39,68 +40,73 @@ public class PlayerBehaviour : MonoBehaviour {
         _characterController = GetComponent<CharacterController>();
         _playerCamera = FindObjectOfType<PlayerCameraBehaviour>().GetComponent<Camera>();
         _stateMachine = GetComponent<StateMachineBehaviour>();
+
+        lookDirection = moveDirection;
     }
 
     public void Start() {
-        LookAtMove(doMove: false);
+        LookAtMove();
     }
 
     void Update() {
-        Debug.DrawLine(transform.position, transform.position + 10 * move.normalized);
+        States currentState = _stateMachine.GetCurrentState<States>();
 
-        UpdateGravity();
-        if (UpdateMove()) {
-            LookAtMove(doMove: true);
-        }
+        UpdateControls(currentState);
+        UpdateMove(currentState);
 
-        UpdateControls();
-
+        Debug.DrawLine(transform.position, transform.position + 10 * lookDirection.normalized);
     }
 
-    private void UpdateControls() {
-        if (Input.GetButtonDown("A")) {
-            if (_stateMachine.IsCurrentState(States.NORMAL)) {
-                if (_stateMachine.ChangeState(States.DASH)) {
-                    Debug.Log("Changed state");
+    private void UpdateControls(States currentState) {
+        if (currentState == States.DASH) {
+
+        } else if (currentState == States.NORMAL) {
+            if (Input.GetButtonDown("A")) {
+                if (_stateMachine.IsCurrentState(States.NORMAL)) {
+                    _stateMachine.ChangeState(States.DASH);
                 }
+            } else {
+                moveDirection = Vector3.zero;
+
+                var x = Input.GetAxis("Horizontal");
+                var z = Input.GetAxis("Vertical");
+
+                var rx = Input.GetAxisRaw("Horizontal");
+                var rz = Input.GetAxisRaw("Vertical");
+                if (rx == 0) { x /= 3; }
+                if (rz == 0) { z /= 3; }
+
+                if ((x != 0) || (z != 0)) {
+                    moveDirection = new Vector3(x, 0, z) * speed;
+                    if (moveDirection.sqrMagnitude > 1) {
+                        moveDirection.Normalize();
+                    }
+                    Vector3 cameraEuler = _playerCamera.transform.rotation.eulerAngles;
+                    Quaternion cameraRotation = Quaternion.Euler(0, cameraEuler.y, 0);
+                    moveDirection = cameraRotation * moveDirection;
+                    lookDirection = moveDirection;
+                }
+                target = lookDirection.normalized * targetDistance;
             }
         }
     }
-    private void UpdateGravity() {
+
+    private void UpdateGravity(States currentState) {
         Vector3 gravity = new Vector3(0, -gravitySpeed, 0);
         _characterController.Move(gravity);
     }
 
-    private bool UpdateMove() {
-        var x = Input.GetAxis("Horizontal");
-        var z = Input.GetAxis("Vertical");
+    private void UpdateMove(States currentState) {
+        UpdateGravity(currentState);
+        LookAtMove();
 
-        var rx = Input.GetAxisRaw("Horizontal");
-        var rz = Input.GetAxisRaw("Vertical");
-        if (rx == 0) { x /= 3; }
-        if (rz == 0) { z /= 3; }
 
-        bool change = false;
-        if ((x != 0) || (z != 0)) {
-            move = new Vector3(x, 0, z) * speed;
-            if (move.sqrMagnitude > 1) {
-                move.Normalize();
-            }
-            Vector3 cameraEuler = _playerCamera.transform.rotation.eulerAngles;
-            Quaternion cameraRotation = Quaternion.Euler(0, cameraEuler.y, 0);
-            move = cameraRotation * move;
-
-            change = true;
-        }
-        target = move.normalized * targetDistance;
-        return change;
     }
 
-    private void LookAtMove(bool doMove = true) {
-        transform.rotation = Quaternion.LookRotation(move);
-        if (doMove) {
-            //transform.Translate(move);
-            _characterController.Move(move);
+    private void LookAtMove() {
+        if (moveDirection != Vector3.zero) {
+            transform.rotation = Quaternion.LookRotation(moveDirection);
+            _characterController.Move(moveDirection);
         }
     }
 }

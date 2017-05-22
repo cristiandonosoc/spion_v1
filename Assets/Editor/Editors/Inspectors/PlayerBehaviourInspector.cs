@@ -22,7 +22,7 @@ public partial class PlayerBehaviourInspector : SpecializedInspector {
         _target.targetDistance = EditorGUILayout.FloatField("Target Distance", _target.targetDistance);
         _target.gravitySpeed = EditorGUILayout.FloatField("Gravity Speed", _target.gravitySpeed);
 
-        _target.move = EditorGUILayout.Vector3Field("Move Direction", _target.move);
+        _target.moveDirection = EditorGUILayout.Vector3Field("Move Direction", _target.moveDirection);
         GUI.enabled = false;
         EditorGUILayout.Vector3Field("Look Target", _target.target);
         GUI.enabled = true;
