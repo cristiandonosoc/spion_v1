@@ -18,19 +18,19 @@ public partial class PlayerBehaviourInspector : SpecializedInspector {
     }
 
     private void MovementInspector() {
-        _target.speed = EditorGUILayout.FloatField("Speed", _target.speed);
-        _target.targetDistance = EditorGUILayout.FloatField("Target Distance", _target.targetDistance);
-        _target.gravitySpeed = EditorGUILayout.FloatField("Gravity Speed", _target.gravitySpeed);
+        _target.Speed = EditorGUILayout.FloatField("Speed", _target.Speed);
+        _target.TargetDistance = EditorGUILayout.FloatField("Target Distance", _target.TargetDistance);
+        _target.GravitySpeed = EditorGUILayout.FloatField("Gravity Speed", _target.GravitySpeed);
 
-        _target.moveDirection = EditorGUILayout.Vector3Field("Move Direction", _target.moveDirection);
         GUI.enabled = false;
-        EditorGUILayout.Vector3Field("Look Target", _target.target);
+        EditorGUILayout.Vector3Field("Move Direction", _target.MoveDirection);
+        EditorGUILayout.Vector3Field("Look Target", _target.TargetPosition);
         GUI.enabled = true;
     }
 
     private void HealthInspector() {
-        _target.maxHP = EditorGUILayout.IntField("Max HP", _target.maxHP);
-        _target.currentHP = EditorGUILayout.IntSlider("Current HP", _target.currentHP, 0, _target.maxHP);
+        _target.MaxHP = EditorGUILayout.IntField("Max HP", _target.MaxHP);
+        _target.CurrentHP = EditorGUILayout.IntSlider("Current HP", _target.CurrentHP, 0, _target.MaxHP);
     }
 
     private void DebugInspector() {

@@ -19,7 +19,7 @@ public class HealthBarBehaviour : MonoBehaviour {
 	// Update is called once per frame
 	void Update() {
         // We see how much we have to move the life
-        float ratio = (float)_player.currentHP / (float)_player.maxHP;
+        float ratio = (float)_player.CurrentHP / (float)_player.MaxHP;
         _healthBar.transform.localScale = new Vector3(ratio,
                                                       _healthBar.transform.localScale.y,
                                                       _healthBar.transform.localScale.z);
