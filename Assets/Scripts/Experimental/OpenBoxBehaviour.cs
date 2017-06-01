@@ -82,7 +82,7 @@ public class OpenBoxBehaviour : CustomMonoBehaviour {
 
     #region UPDATE
 
-    public void Update() {
+    protected override void PlayModeUpdate() {
         if (beingDestroyed) { return; }
         UpdateBar();
         UpdatePlayerInput();
@@ -107,7 +107,6 @@ public class OpenBoxBehaviour : CustomMonoBehaviour {
                 fillness += (1 / fillCompleteTime) * Time.deltaTime;
                 if (fillness >= 1) {
                     Animator.SetTrigger("EnterSuccess");
-                    // The animator callback should do this, but it takes *forever*
                     _currentAnimatorState = OpenBoxStates.SUCCESS;
                 }
             } else {

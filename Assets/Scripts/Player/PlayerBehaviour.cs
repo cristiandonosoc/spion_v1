@@ -3,24 +3,46 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerBehaviour : MonoBehaviour {
+public class PlayerBehaviour : CustomMonoBehaviour {
 
     [StateMachineEnum]
     public enum States {
         NORMAL = 0,
-        DASHING = 1
+        DASHING = 1,
+        ATTACKING = 2
     }
 
     #region DATA
 
     [Serializable]
-    public class Data {
+    public class MoveData {
         public float speed = 0.1f;
+    }
+
+    [Serializable]
+    public class DashingData {
+        public float speed = 0.6f;
+        public float currentDuration = 0;
+        public float duration = 1.0f;
+    }
+
+    [Serializable]
+    public class AttackingData {
+        public float time = 0.2f;
+        public SwordBehaviour weapon;
+    }
+
+    [Serializable]
+    public class Data {
+        public MoveData moveData;
+        public DashingData dashingData;
+        public AttackingData attackingData;
+
         public Vector3 moveDirection = new Vector3(0, 0, -1);
         public Vector3 lookDirection;
-
         public float targetDistance = 10;
         public Vector3 targetVector;
+
 
         // TODO(Cristian): Do a much better gravity feel
         public float gravitySpeed = 0.1f;
@@ -29,6 +51,9 @@ public class PlayerBehaviour : MonoBehaviour {
         public int currentHP = 10;
 
         public Data() {
+            moveData = new MoveData();
+            dashingData = new DashingData();
+            attackingData = new AttackingData();
             lookDirection = moveDirection;
         }
     }
@@ -43,10 +68,17 @@ public class PlayerBehaviour : MonoBehaviour {
         }
     }
 
-    public float Speed {
-        get { return InternalData.speed; }
-        set { InternalData.speed = value; }
+    public MoveData InternalMoveData {
+        get { return InternalData.moveData; }
     }
+    public DashingData InternalDashingData {
+        get { return InternalData.dashingData; }
+    }
+
+    public AttackingData InternalAttackingData {
+        get { return InternalData.attackingData; }
+    }
+
     public float TargetDistance {
         get { return InternalData.targetDistance; }
         set { InternalData.targetDistance = value; }
@@ -75,18 +107,36 @@ public class PlayerBehaviour : MonoBehaviour {
     private CharacterController _characterController;
     private Camera _playerCamera;
     private StateMachineBehaviour _stateMachine;
+    private ParticleSystem _particleSystem;
 
-    public void Awake() {
+    private SwordBehaviour _sword;
+    public SwordBehaviour Sword {
+        get {
+            if (_sword == null) {
+                _sword = GetComponentInChildren<SwordBehaviour>();
+                if (_sword == null) {
+                    _sword = Instantiate<SwordBehaviour>(InternalAttackingData.weapon);
+                    _sword.transform.parent = transform;
+                }
+            }
+            return _sword;
+        }
+
+    }
+
+    protected override void PlayModeAwake() {
         _characterController = GetComponent<CharacterController>();
         _playerCamera = FindObjectOfType<PlayerCameraBehaviour>().GetComponent<Camera>();
         _stateMachine = GetComponent<StateMachineBehaviour>();
-    }
+        _particleSystem = GetComponentInChildren<ParticleSystem>();
+        _particleSystem.Stop();
+        // Just to instantiate
+        Sword.Parent = this;
 
-    public void Start() {
         LookAtMove();
     }
 
-    void Update() {
+    protected override void PlayModeUpdate() {
         States currentState = _stateMachine.GetCurrentState<States>();
 
         UpdateControls(currentState);
@@ -102,6 +152,12 @@ public class PlayerBehaviour : MonoBehaviour {
             if (Input.GetButtonDown("A")) {
                 if (_stateMachine.IsCurrentState(States.NORMAL)) {
                     _stateMachine.ChangeState(States.DASHING);
+                    _particleSystem.Play();
+                }
+            }  if (Input.GetButton("X")) {
+                if (_stateMachine.IsCurrentState(States.NORMAL)) {
+                    _stateMachine.ChangeState(States.ATTACKING);
+                    Sword.ReceiveMessage(Message.Create(SwordBehaviour.MessageKind.ATTACK));
                 }
             } else {
                 UpdateMoveControls();
@@ -120,10 +176,8 @@ public class PlayerBehaviour : MonoBehaviour {
         if (rz == 0) { z /= 3; }
 
         if ((x != 0) || (z != 0)) {
-            InternalData.moveDirection = new Vector3(x, 0, z) * InternalData.speed;
-            if (InternalData.moveDirection.sqrMagnitude > 1) {
-                InternalData.moveDirection.Normalize();
-            }
+            InternalData.moveDirection = new Vector3(x, 0, z);
+            InternalData.moveDirection.Normalize();
             Vector3 cameraEuler = _playerCamera.transform.rotation.eulerAngles;
             Quaternion cameraRotation = Quaternion.Euler(0, cameraEuler.y, 0);
             InternalData.moveDirection = cameraRotation * InternalData.moveDirection;
@@ -143,14 +197,36 @@ public class PlayerBehaviour : MonoBehaviour {
             UpdateGravity(currentState);
             LookAtMove();
         } else if (currentState == States.DASHING) {
-
+            _characterController.Move(InternalData.lookDirection * InternalDashingData.speed);
+            InternalDashingData.currentDuration += Time.deltaTime;
+            if (InternalDashingData.currentDuration > InternalDashingData.duration) {
+                InternalDashingData.currentDuration = 0;
+                _stateMachine.ChangeState(States.NORMAL);
+                _particleSystem.Stop();
+            }
         }
     }
 
     private void LookAtMove() {
         if (InternalData.moveDirection != Vector3.zero) {
             transform.rotation = Quaternion.LookRotation(InternalData.moveDirection);
-            _characterController.Move(InternalData.moveDirection);
+            _characterController.Move(InternalData.moveDirection * InternalMoveData.speed);
+        }
+    }
+
+    [MessageKindMarker]
+    public enum MessageKind {
+        ATTACK_STOPPED
+    }
+
+    public override void ReceiveMessage(Message msg) {
+        if (msg.type == typeof(MessageKind)) {
+            MessageKind messageKind = (MessageKind)msg.messageKind;
+            if (messageKind == MessageKind.ATTACK_STOPPED) {
+                _stateMachine.ChangeState(States.NORMAL);
+            }
+        } else {
+            LogError("Received wrong MessageKind: {0}", msg.type.ToString());
         }
     }
 }

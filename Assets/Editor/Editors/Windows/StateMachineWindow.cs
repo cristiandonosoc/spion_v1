@@ -10,7 +10,6 @@ public class StateMachineWindow : EditorWindow {
     Rect window1;
     Rect window2;
 
-    int selectedIndex = 0;
     Type[] types;
 
     public const int controlsWidth = 300;

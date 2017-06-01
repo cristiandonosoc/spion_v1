@@ -10,15 +10,18 @@ public partial class PlayerBehaviourInspector : SpecializedInspector {
     public override void OnInspectorGUI() {
         _target = (PlayerBehaviour)target;
 
-        IndentedInspector("Movement", MovementInspector);
+        IndentedInspector("Normal", NormalInspector);
+        HorizontalBreak();
+        IndentedInspector("Dashing", DashingInspector);
         HorizontalBreak();
         IndentedInspector("Health", HealthInspector);
         HorizontalBreak();
-        IndentedInspector("Debug", DebugInspector);
+        IndentedInspector("Debug", DebugInspector, openAtStart: false);
     }
 
-    private void MovementInspector() {
-        _target.Speed = EditorGUILayout.FloatField("Speed", _target.Speed);
+    private void NormalInspector() {
+        _target.InternalMoveData.speed = EditorGUILayout.FloatField("Speed", _target.InternalMoveData.speed);
+
         _target.TargetDistance = EditorGUILayout.FloatField("Target Distance", _target.TargetDistance);
         _target.GravitySpeed = EditorGUILayout.FloatField("Gravity Speed", _target.GravitySpeed);
 
@@ -26,6 +29,15 @@ public partial class PlayerBehaviourInspector : SpecializedInspector {
         EditorGUILayout.Vector3Field("Move Direction", _target.MoveDirection);
         EditorGUILayout.Vector3Field("Look Target", _target.TargetPosition);
         GUI.enabled = true;
+    }
+
+    private void DashingInspector() {
+        _target.InternalDashingData.speed = EditorGUILayout.FloatField("Speed", _target.InternalDashingData.speed);
+        _target.InternalDashingData.currentDuration = EditorGUILayout.FloatField("Current Duration", 
+                                                                                 _target.InternalDashingData.currentDuration);
+        _target.InternalDashingData.duration = EditorGUILayout.FloatField("Duration", 
+                                                                          _target.InternalDashingData.duration);
+
     }
 
     private void HealthInspector() {

@@ -95,7 +95,11 @@ public class StateMachineBehaviour : CustomMonoBehaviour {
                 return transitions;
             }
         }
-        return null;
+
+        // We need to create the transitions
+        StateTransitions t = new StateTransitions(state);
+        StateTransitions.Add(t);
+        return t;
     }
 
     /// <summary>

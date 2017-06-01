@@ -53,6 +53,18 @@ public abstract class CustomMonoBehaviour : MonoBehaviour {
 
     protected virtual void EditorAwake() { }
     protected virtual void PlayModeAwake() { }
+
+    public void Update() {
+        if (!Application.isPlaying) {
+            EditorUpdate();
+        } else {
+            PlayModeUpdate();
+        }
+    }
+
+    protected virtual void EditorUpdate() { }
+    protected virtual void PlayModeUpdate() { }
+
     public virtual void Refresh() { }
 
     /// <summary>
