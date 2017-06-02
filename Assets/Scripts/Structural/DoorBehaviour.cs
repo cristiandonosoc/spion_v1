@@ -198,6 +198,11 @@ public class DoorBehaviour : CustomMonoBehaviour {
     }
 
     private void EnterDoorZoneTrigger(Collider collider) {
+        if (collider.tag != "Player") {
+            return;
+        }
+
+
         if (_dialogInstance) { return; }
         _dialogInstance = Instantiate<OpenBoxBehaviour>(OpenDialogPrefab);
         _dialogInstance.transform.parent = transform;
@@ -206,6 +211,9 @@ public class DoorBehaviour : CustomMonoBehaviour {
 
         // We set the trigger
         _dialogInstance.player = collider.GetComponent<PlayerBehaviour>();
+        if (_dialogInstance.player == null) {
+            Log("NULL PLAYER");
+        }
         _dialogInstance.door = this;
     }
 

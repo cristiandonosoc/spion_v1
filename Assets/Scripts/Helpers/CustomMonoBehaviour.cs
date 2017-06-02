@@ -86,7 +86,6 @@ public abstract class CustomMonoBehaviour : MonoBehaviour {
         LogWarning("Received message in base class");
     }
 
-
     public virtual void AnimationStateChange(AnimationStateEvent animationEvent, int stateValue) {
         LogWarning("Received Animation State change in base class");
     }

@@ -82,8 +82,10 @@ public class SwordBehaviour : CustomMonoBehaviour {
         TrailRenderer.enabled = false;
     }
 
+    void OnTriggerEnter(Collider other) {
+        EnemyBehaviour enemy = other.GetComponent<EnemyBehaviour>();
+        if (enemy == null) { return; }
 
-
-
-
+        enemy.ReceiveMessage(Message.Create(EnemyBehaviour.MessageKind.HIT));
+    }
 }
