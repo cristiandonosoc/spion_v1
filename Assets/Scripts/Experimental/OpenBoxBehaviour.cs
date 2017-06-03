@@ -150,18 +150,22 @@ public class OpenBoxBehaviour : CustomMonoBehaviour {
         }
     }
 
+    public override bool GetAnimationStateEvents() {
+        return true;
+    }
+
     public override void AnimationStateChange(AnimationStateEvent animationEvent, int stateValue) {
         // We cast the value
         OpenBoxStates openBoxState = (OpenBoxStates)stateValue;
 
-        if (animationEvent == AnimationStateEvent.ANIMATION_START) {
+        if (animationEvent == AnimationStateEvent.ANIMATION_ENTER) {
             _currentAnimatorState = openBoxState;
             if (openBoxState == OpenBoxStates.SUCCESS) {
                 if (door) {
                     door.ReceiveMessage(Message.Create(DoorBehaviour.MessageKind.OPEN));
                 }
             }
-        } else if (animationEvent == AnimationStateEvent.ANIMATION_END) {
+        } else if (animationEvent == AnimationStateEvent.ANIMATION_EXIT) {
             if (openBoxState == OpenBoxStates.CLOSING) {
                 beingDestroyed = true;
                 Destroy(gameObject);

@@ -41,8 +41,17 @@ public partial class PlayerBehaviourInspector : SpecializedInspector {
     }
 
     private void HealthInspector() {
-        _target.MaxHP = EditorGUILayout.IntField("Max HP", _target.MaxHP);
-        _target.CurrentHP = EditorGUILayout.IntSlider("Current HP", _target.CurrentHP, 0, _target.MaxHP);
+
+        var hc = (HealthComponentBehaviour)EditorGUILayout.ObjectField("Health Component", 
+                                                                                        _target.HealthComponent,
+                                                                                        typeof(HealthComponentBehaviour), 
+                                                                                        allowSceneObjects: true);
+        _target.HealthComponent = hc;
+
+        if (hc == null) { return; }
+
+        hc.MaxHP = EditorGUILayout.IntField("Max HP", hc.MaxHP);
+        hc.CurrentHP = EditorGUILayout.IntSlider("Current HP", hc.CurrentHP, 0, hc.MaxHP);
     }
 
     private void DebugInspector() {

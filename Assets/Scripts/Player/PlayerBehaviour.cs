@@ -47,8 +47,7 @@ public class PlayerBehaviour : CustomMonoBehaviour {
         // TODO(Cristian): Do a much better gravity feel
         public float gravitySpeed = 0.1f;
 
-        public int maxHP = 10;
-        public int currentHP = 10;
+        public HealthComponentBehaviour healthComponent;
 
         public Data() {
             moveData = new MoveData();
@@ -79,6 +78,11 @@ public class PlayerBehaviour : CustomMonoBehaviour {
         get { return InternalData.attackingData; }
     }
 
+    public HealthComponentBehaviour HealthComponent {
+        get { return InternalData.healthComponent; }
+        set { InternalData.healthComponent = value; }
+    }
+
     public float TargetDistance {
         get { return InternalData.targetDistance; }
         set { InternalData.targetDistance = value; }
@@ -86,14 +90,6 @@ public class PlayerBehaviour : CustomMonoBehaviour {
     public float GravitySpeed {
         get { return InternalData.gravitySpeed; }
         set { InternalData.gravitySpeed = value; }
-    }
-    public int CurrentHP {
-        get { return InternalData.currentHP; }
-        set { InternalData.currentHP = value; }
-    }
-    public int MaxHP {
-        get { return InternalData.maxHP; }
-        set { InternalData.maxHP = value; }
     }
 
     public Vector3 MoveDirection { get { return InternalData.moveDirection; } }

@@ -19,8 +19,8 @@ public class AnimationEnum : Attribute { }
 /// Very much a test.
 /// </summary>
 public enum AnimationStateEvent {
-    ANIMATION_START,
-    ANIMATION_END
+    ANIMATION_ENTER,
+    ANIMATION_EXIT
 }
 
 /// <summary>
@@ -41,12 +41,18 @@ public class AnimationState : UnityEngine.StateMachineBehaviour {
     public SerializableType enumType;
     public int enumValue;
 
-    private CustomMonoBehaviour _target;
-    private CustomMonoBehaviour GetTarget(Animator animator) {
-        if (_target == null) {
-            _target = animator.GetComponent<CustomMonoBehaviour>();
+    private List<CustomMonoBehaviour> _targets;
+    private List<CustomMonoBehaviour> GetTargets(Animator animator) {
+        if (_targets == null) {
+            CustomMonoBehaviour[] potentialTargets = animator.GetComponents<CustomMonoBehaviour>();
+            _targets = new List<CustomMonoBehaviour>();
+            foreach (CustomMonoBehaviour potentialTarget in potentialTargets) {
+                if (potentialTarget.GetAnimationStateEvents()) {
+                    _targets.Add(potentialTarget);
+                }
+            }
         }
-        return _target;
+        return _targets;
     }
 
     // NOTE(Cristian): For now we only care for Enter and Exit. Keeping the comments for future reference
@@ -57,8 +63,11 @@ public class AnimationState : UnityEngine.StateMachineBehaviour {
         // We update the state variable (So this is queryable by the Animator users)
         animator.SetInteger("State", enumValue);
 
-        CustomMonoBehaviour target = GetTarget(animator);
-        target.AnimationStateChange(AnimationStateEvent.ANIMATION_START, enumValue);
+        List<CustomMonoBehaviour> targets = GetTargets(animator);
+        foreach (CustomMonoBehaviour target in targets) {
+            target.AnimationStateChange(AnimationStateEvent.ANIMATION_ENTER, enumValue);
+        }
+
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
@@ -68,8 +77,10 @@ public class AnimationState : UnityEngine.StateMachineBehaviour {
 
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-        CustomMonoBehaviour target = GetTarget(animator);
-        target.AnimationStateChange(AnimationStateEvent.ANIMATION_END, enumValue);
+        List<CustomMonoBehaviour> targets = GetTargets(animator);
+        foreach (CustomMonoBehaviour target in targets) {
+            target.AnimationStateChange(AnimationStateEvent.ANIMATION_EXIT, enumValue);
+        }
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove(). Code that processes and affects root motion should be implemented here

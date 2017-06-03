@@ -42,16 +42,20 @@ public class SwordBehaviour : CustomMonoBehaviour {
         }
     }
 
+    public override bool GetAnimationStateEvents() {
+        return true;
+    }
+
     public override void AnimationStateChange(AnimationStateEvent animationEvent, int stateValue) {
         // We cast the value
         AnimationStates state = (AnimationStates)stateValue;
-        if ((animationEvent == AnimationStateEvent.ANIMATION_START) &&
+        if ((animationEvent == AnimationStateEvent.ANIMATION_ENTER) &&
             (_currentAnimationState == state) &&
             (state == AnimationStates.IDLE)) {
             return;
         }
 
-        if (animationEvent == AnimationStateEvent.ANIMATION_START) {
+        if (animationEvent == AnimationStateEvent.ANIMATION_ENTER) {
             _currentAnimationState = state;
             if (_currentAnimationState == AnimationStates.ATTACKING) {
                 TrailRenderer.enabled = true;
@@ -85,6 +89,7 @@ public class SwordBehaviour : CustomMonoBehaviour {
     void OnTriggerEnter(Collider other) {
         EnemyBehaviour enemy = other.GetComponent<EnemyBehaviour>();
         if (enemy == null) { return; }
+        if (_currentAnimationState == AnimationStates.IDLE) { return; }
 
         enemy.ReceiveMessage(Message.Create(EnemyBehaviour.MessageKind.HIT));
     }

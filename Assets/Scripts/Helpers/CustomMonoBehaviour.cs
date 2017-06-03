@@ -66,6 +66,9 @@ public abstract class CustomMonoBehaviour : MonoBehaviour {
     protected virtual void PlayModeUpdate() { }
 
     public virtual void Refresh() { }
+    public virtual bool GetAnimationStateEvents() {
+        return false;
+    }
 
     /// <summary>
     /// A simple wrapper so that it differentiates code if on editor on not.
