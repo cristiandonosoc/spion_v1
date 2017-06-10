@@ -53,7 +53,10 @@ public class TriggerZoneManagerBehaviourEditor : SpecializedInspector {
                         messageKindValues.Add(enumValue);
 
                         string enumName = enumNames[i];
-                        string optionName = componentType.ToString() + " | " + enumName;
+                        //string optionName = componentType.ToString() + " | " + nestedType.ToString + " + enumName;
+                        string optionName = string.Format("{0} | {1} | {2}", componentType.ToString(),
+                                                                             nestedType.Name,
+                                                                             enumName);
                         optionNames.Add(optionName);
                     }
                 }

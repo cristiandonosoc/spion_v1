@@ -91,6 +91,7 @@ public class SwordBehaviour : CustomMonoBehaviour {
         if (enemy == null) { return; }
         if (_currentAnimationState == AnimationStates.IDLE) { return; }
 
-        enemy.ReceiveMessage(Message.Create(EnemyBehaviour.MessageKind.HIT));
+        //enemy.ReceiveMessage(Message.Create(EnemyBehaviour.MessageKind.HIT));
+        enemy.ReceiveMessage(EnemyBehaviour.MessageKind.HIT);
     }
 }
