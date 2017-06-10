@@ -85,11 +85,11 @@ public abstract class CustomMonoBehaviour : MonoBehaviour {
 #endif
     }
 
-    public virtual void ReceiveMessage(Message message) {
-        LogWarning("Received message in base class");
-    }
+    //public virtual void ReceiveMessage(Message message) {
+    //    LogWarning("Received message in base class");
+    //}
 
-    public virtual void ReceiveMessage<T>(T msg, object payload = null) {
+    public virtual void ReceiveMessage<T>(T msg, object payload = null) where T : IConvertible { 
         LogWarning("Received message in base class");
     }
 

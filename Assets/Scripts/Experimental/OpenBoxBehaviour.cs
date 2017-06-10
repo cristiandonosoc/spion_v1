@@ -132,27 +132,37 @@ public class OpenBoxBehaviour : CustomMonoBehaviour {
         Bar.transform.localScale = Bar.transform.localScale.WithX(fillness);
     }
 
-    #region ANIMATION
+
+    #region MESSAGES
 
     [MessageKindMarker]
     public enum MessageKind {
         CLOSE
     }
 
-    public override void ReceiveMessage(Message msg) {
-        if (msg.type == typeof(MessageKind)) {
-            MessageKind messageKind = (MessageKind)msg.messageKind;
-            if (messageKind == MessageKind.CLOSE) {
-                Animator.SetTrigger("EnterClosing");
-            }
+    public override void ReceiveMessage<T>(T msg, object payload = null) {
+        if (typeof(T) == typeof(MessageKind)) {
+            ReceiveMessage(TypeHelpers.TypeToType<T, MessageKind>(msg), payload);
         } else {
-            LogError("Received wrong MessageKind: {0}", msg.type.ToString());
+            LogError("Received wrong MessageKind: {0}", typeof(T).ToString());
         }
     }
+
+    private void ReceiveMessage(MessageKind msg, object payload) {
+        if (msg == MessageKind.CLOSE) {
+            Animator.SetTrigger("EnterClosing");
+        }
+    }
+
+    #endregion MESSAGES
+
 
     public override bool GetAnimationStateEvents() {
         return true;
     }
+
+
+    #region ANIMATION
 
     public override void AnimationStateChange(AnimationStateEvent animationEvent, int stateValue) {
         // We cast the value
@@ -162,7 +172,7 @@ public class OpenBoxBehaviour : CustomMonoBehaviour {
             _currentAnimatorState = openBoxState;
             if (openBoxState == OpenBoxStates.SUCCESS) {
                 if (door) {
-                    door.ReceiveMessage(Message.Create(DoorBehaviour.MessageKind.OPEN));
+                    door.ReceiveMessage(DoorBehaviour.MessageKind.OPEN);
                 }
             }
         } else if (animationEvent == AnimationStateEvent.ANIMATION_EXIT) {

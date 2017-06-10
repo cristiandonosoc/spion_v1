@@ -5,14 +5,6 @@ using UnityEngine;
 
 
 public class DoorBehaviour : CustomMonoBehaviour {
-    [MessageKindMarker]
-    public enum MessageKind {
-        OPEN,
-        CLOSE,
-        CREATE_DIALOG,
-        DESTROY_DIALOG
-    }
-
     private OpenBoxBehaviour _dialogInstance;
 
     #region SYNC DATA
@@ -147,36 +139,54 @@ public class DoorBehaviour : CustomMonoBehaviour {
 
     #endregion LIFETIME MANAGEMENT
 
-    #region ACTIONS
+    #region MESSAGES
 
-    public override void ReceiveMessage(Message msg) {
-        if (msg.type == typeof(MessageKind)) {
-            MessageKind messageKind = (MessageKind)msg.messageKind;
-            if (messageKind == MessageKind.OPEN) {
-                Open();
-            } else if (messageKind == MessageKind.CLOSE) {
-                Close();
-            }
-        } else if (msg.type == typeof(TriggerZoneMessage.MessageKind)) {
-            var triggerKind = (TriggerZoneMessage.MessageKind)msg.messageKind;
-            var triggerPayload = (TriggerZoneMessage.MessagePayload)msg.payload;
+    [MessageKindMarker]
+    public enum MessageKind {
+        OPEN,
+        CLOSE,
+        CREATE_DIALOG,
+        DESTROY_DIALOG
+    }
 
-            Message internalMessage = triggerPayload.internalMessage;
-            MessageKind internalMessageKind = (MessageKind)internalMessage.messageKind;
-
-            if (triggerKind == TriggerZoneMessage.MessageKind.ENTER) {
-                if (internalMessageKind == MessageKind.CREATE_DIALOG) {
-                    EnterDoorZoneTrigger(triggerPayload.collider);
-                }
-            } else if (triggerKind == TriggerZoneMessage.MessageKind.EXIT) {
-                if (internalMessageKind == MessageKind.DESTROY_DIALOG) {
-                    ExitDoorZoneTrigger(triggerPayload.collider);
-                }
-            }
+    public override void ReceiveMessage<T>(T msg, object payload = null) {
+        if (typeof(T) == typeof(MessageKind)) {
+            ProcessMessage(TypeHelpers.TypeToType<T, MessageKind>(msg), payload);
+        }  else if (typeof(T) == typeof(TriggerZoneMessage.MessageKind)) { 
+            ProcessMessage(TypeHelpers.TypeToType<T, TriggerZoneMessage.MessageKind>(msg), payload);
         } else {
-            LogError("Wrong message type received: {0}", msg.type.ToString());
+            LogError("Received wrong MessageKind: {0}", typeof(T).FullName);
         }
     }
+
+    private void ProcessMessage(MessageKind msg, object payload) {
+        if (msg == MessageKind.OPEN) {
+            Open();
+        } else if (msg == MessageKind.CLOSE) {
+            Close();
+        }
+    }
+
+    private void ProcessMessage(TriggerZoneMessage.MessageKind msg, object payload) {
+        var triggerPayload = (TriggerZoneMessage.MessagePayload)payload;
+
+        Message internalMessage = triggerPayload.internalMessage;
+        MessageKind internalMessageKind = (MessageKind)internalMessage.messageKind;
+
+        if (msg == TriggerZoneMessage.MessageKind.ENTER) {
+            if (internalMessageKind == MessageKind.CREATE_DIALOG) {
+                EnterDoorZoneTrigger(triggerPayload.collider);
+            }
+        } else if (msg == TriggerZoneMessage.MessageKind.EXIT) {
+            if (internalMessageKind == MessageKind.DESTROY_DIALOG) {
+                ExitDoorZoneTrigger(triggerPayload.collider);
+            }
+        }
+    }
+
+    #endregion MESSAGES
+
+    #region ACTIONS
 
     private void Open() {
         if (DoorModelInstance.Animator.GetBool("Open")) {
@@ -219,7 +229,7 @@ public class DoorBehaviour : CustomMonoBehaviour {
 
     private void ExitDoorZoneTrigger(Collider test2) {
         if (_dialogInstance) {
-            _dialogInstance.ReceiveMessage(Message.Create(OpenBoxBehaviour.MessageKind.CLOSE));
+            _dialogInstance.ReceiveMessage(OpenBoxBehaviour.MessageKind.CLOSE);
         }
         Close();
     }

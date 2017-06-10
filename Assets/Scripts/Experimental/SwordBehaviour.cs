@@ -13,11 +13,6 @@ public class SwordBehaviour : CustomMonoBehaviour {
 
     private AnimationStates _currentAnimationState = AnimationStates.IDLE;
 
-    [MessageKindMarker]
-    public enum MessageKind {
-        ATTACK
-    }
-
     [SerializeField]
     private Animator _animator;
     public Animator Animator {
@@ -29,18 +24,31 @@ public class SwordBehaviour : CustomMonoBehaviour {
         }
     }
 
-    public override void ReceiveMessage(Message msg) {
-        if (msg.type == typeof(MessageKind)) {
-            MessageKind messageKind = (MessageKind)msg.messageKind;
-            if (messageKind == MessageKind.ATTACK) {
-                if (_currentAnimationState == AnimationStates.IDLE) {
-                    Animator.SetTrigger("EnterAttack");
-                }
-            }
+    #region MESSAGES
+
+    [MessageKindMarker]
+    public enum MessageKind {
+        ATTACK
+    }
+
+    public override void ReceiveMessage<T>(T msg, object payload = null) {
+        if (typeof(T) == typeof(MessageKind)) {
+            ProcessMessage(TypeHelpers.TypeToType<T, MessageKind>(msg), payload);
         } else {
-            LogError("Received wrong MessageKind: {0}", msg.type.ToString());
+            LogError("Received wrong MessageKind: {0}", typeof(T).FullName);
         }
     }
+
+    private void ProcessMessage(MessageKind msg, object payload) {
+        if (msg == MessageKind.ATTACK) {
+            if (_currentAnimationState == AnimationStates.IDLE) {
+                Animator.SetTrigger("EnterAttack");
+            }
+        }
+    }
+
+    #endregion MESSAGES
+
 
     public override bool GetAnimationStateEvents() {
         return true;
@@ -62,8 +70,7 @@ public class SwordBehaviour : CustomMonoBehaviour {
             } else if (_currentAnimationState == AnimationStates.IDLE) {
                 TrailRenderer.enabled = false;
                 if (Parent != null) {
-
-                    Parent.ReceiveMessage(Message.Create(PlayerBehaviour.MessageKind.ATTACK_STOPPED));
+                    Parent.ReceiveMessage(PlayerBehaviour.MessageKind.ATTACK_STOPPED);
                 }
             }
         }

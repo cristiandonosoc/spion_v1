@@ -6,6 +6,10 @@ using UnityEngine;
 
 public static class TypeHelpers {
 
+    public static T_To TypeToType<T_From, T_To>(T_From from) {
+        return (T_To)Convert.ChangeType(from, typeof(T_To));
+    }
+
     public static bool TypeHasAttribute(Type type, Type attributeType) {
         return (type.GetCustomAttributes(attributeType, false).Length > 0);
     }

@@ -153,7 +153,7 @@ public class PlayerBehaviour : CustomMonoBehaviour {
             }  if (Input.GetButton("X")) {
                 if (_stateMachine.IsCurrentState(States.NORMAL)) {
                     _stateMachine.ChangeState(States.ATTACKING);
-                    Sword.ReceiveMessage(Message.Create(SwordBehaviour.MessageKind.ATTACK));
+                    Sword.ReceiveMessage(SwordBehaviour.MessageKind.ATTACK);
                 }
             } else {
                 UpdateMoveControls();
@@ -210,19 +210,26 @@ public class PlayerBehaviour : CustomMonoBehaviour {
         }
     }
 
+    #region MESSAGE
+
     [MessageKindMarker]
     public enum MessageKind {
         ATTACK_STOPPED
     }
 
-    public override void ReceiveMessage(Message msg) {
-        if (msg.type == typeof(MessageKind)) {
-            MessageKind messageKind = (MessageKind)msg.messageKind;
-            if (messageKind == MessageKind.ATTACK_STOPPED) {
-                _stateMachine.ChangeState(States.NORMAL);
-            }
+    public override void ReceiveMessage<T>(T msg, object payload = null) {
+        if (typeof(T) == typeof(MessageKind)) {
+            ProcessMessage(TypeHelpers.TypeToType<T, MessageKind>(msg), payload);
         } else {
-            LogError("Received wrong MessageKind: {0}", msg.type.ToString());
+            LogError("Received wrong MessageKind: {0}", typeof(T).FullName);
         }
     }
+
+    public void ProcessMessage(MessageKind msg, object payload) {
+        if (msg == MessageKind.ATTACK_STOPPED) {
+            _stateMachine.ChangeState(States.NORMAL);
+        }
+    }
+
+    #endregion MESSAGE
 }
