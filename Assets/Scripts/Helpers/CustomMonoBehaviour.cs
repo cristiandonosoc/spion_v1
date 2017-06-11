@@ -89,12 +89,23 @@ public abstract class CustomMonoBehaviour : MonoBehaviour {
     //    LogWarning("Received message in base class");
     //}
 
-    public virtual void ReceiveMessage<T>(T msg, object payload = null) where T : IConvertible { 
+    public void ReceiveMessage<T>(T msg, object payload = null) where T : IConvertible { 
+        ReceiveMessage(typeof(T), (int)(object)msg, payload);
+    }
+
+    public virtual void ReceiveMessage(Type msgType, int msgValue, object payload = null) {
         LogWarning("Received message in base class");
     }
 
     public virtual void AnimationStateChange(AnimationStateEvent animationEvent, int stateValue) {
         LogWarning("Received Animation State change in base class");
+    }
+
+    public virtual void TriggerZoneEvent(TriggerZoneMessage.MessageKind triggerKind,
+                                         Type msgType,
+                                         int msgValue,
+                                         Collider triggerCollider) {
+        LogWarning("Received Trigger Zone Event in base class");
     }
 
 }

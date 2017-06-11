@@ -217,11 +217,11 @@ public class PlayerBehaviour : CustomMonoBehaviour {
         ATTACK_STOPPED
     }
 
-    public override void ReceiveMessage<T>(T msg, object payload = null) {
-        if (typeof(T) == typeof(MessageKind)) {
-            ProcessMessage(TypeHelpers.TypeToType<T, MessageKind>(msg), payload);
+    public override void ReceiveMessage(Type msgType, int msgValue, object payload = null) {
+        if (msgType == typeof(MessageKind)) {
+            ProcessMessage((MessageKind)msgValue, payload);
         } else {
-            LogError("Received wrong MessageKind: {0}", typeof(T).FullName);
+            LogError("Received wrong MessageKind: {0}", msgType.FullName);
         }
     }
 

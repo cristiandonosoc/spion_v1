@@ -43,9 +43,11 @@ public class EnemyBehaviour : CustomMonoBehaviour {
 
     #region MESSAGES
 
-    public override void ReceiveMessage<T>(T msg, object payload = null) {
-        if (typeof(T) == typeof(MessageKind)) {
-            ProcessMessage((MessageKind)Convert.ChangeType(msg, typeof(MessageKind)), payload);
+    public override void ReceiveMessage(Type msgType, int msgValue, object payload = null) {
+        if (msgType == typeof(MessageKind)) {
+            ProcessMessage((MessageKind)msgValue, payload);
+        } else {
+            LogError("Received wrong MessageKind: {0}", msgType.FullName);
         }
     }
 

@@ -149,13 +149,13 @@ public class DoorBehaviour : CustomMonoBehaviour {
         DESTROY_DIALOG
     }
 
-    public override void ReceiveMessage<T>(T msg, object payload = null) {
-        if (typeof(T) == typeof(MessageKind)) {
-            ProcessMessage(TypeHelpers.TypeToType<T, MessageKind>(msg), payload);
-        }  else if (typeof(T) == typeof(TriggerZoneMessage.MessageKind)) { 
-            ProcessMessage(TypeHelpers.TypeToType<T, TriggerZoneMessage.MessageKind>(msg), payload);
+    public override void ReceiveMessage(Type msgType, int msgValue, object payload = null) {
+        if (msgType == typeof(MessageKind)) {
+            ProcessMessage((MessageKind)msgValue, payload);
+        }  else if (msgType == typeof(TriggerZoneMessage.MessageKind)) { 
+            ProcessMessage((TriggerZoneMessage.MessageKind)msgValue, payload);
         } else {
-            LogError("Received wrong MessageKind: {0}", typeof(T).FullName);
+            LogError("Received wrong MessageKind: {0}", msgType.FullName);
         }
     }
 
