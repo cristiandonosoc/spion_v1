@@ -5,15 +5,24 @@ using UnityEngine;
 
 public class EnemyBehaviour : CustomMonoBehaviour {
 
-    [MessageKindMarker]
-    public enum MessageKind {
-        HIT
+    [Serializable]
+    public class Data {
+        public PlayerBehaviour target;
+
+        public float shotInterval = 1f;
+        public float currentShotInterval = 0f;
+    }
+    [SerializeField]
+    private Data _data;
+    public Data Dataz {
+        get {
+            if (_data == null) {
+                _data = new Data();
+            }
+            return _data;
+        }
     }
 
-    [MessageKindMarker]
-    public enum TriggerMessages {
-        ENEMY_ENTER
-    }
 
     [SerializeField]
     private SparksParticleSystemBehaviour _sparksParticleSystem;
@@ -41,7 +50,29 @@ public class EnemyBehaviour : CustomMonoBehaviour {
         _healthComponent = GetComponent<HealthComponentBehaviour>();
     }
 
+    #region UPDATE
+
+    protected override void PlayModeUpdate() {
+        if (Dataz.target != null) {
+            Dataz.currentShotInterval += Time.deltaTime;
+            if (Dataz.currentShotInterval >= Dataz.shotInterval) {
+                Dataz.currentShotInterval -= Dataz.shotInterval;
+
+                Log("Shot");
+            }
+        }
+    }
+
+    #endregion UPDATE
+
     #region MESSAGES
+
+    [MessageKindMarker]
+    public enum MessageKind {
+        HIT,
+        ENEMY_ENTER,
+        ENEMY_EXIT
+    }
 
     public override void ReceiveMessage(Type msgType, int msgValue, object payload = null) {
         if (msgType == typeof(MessageKind)) {
@@ -69,6 +100,24 @@ public class EnemyBehaviour : CustomMonoBehaviour {
                         Destroy(explosion.gameObject, explosion.main.duration);
                     }
                 }
+            }
+        } else if (msg == MessageKind.ENEMY_ENTER) {
+            Collider collider = (Collider)payload;
+            if (collider.tag != "Player") { return; }
+            PlayerBehaviour player = collider.GetComponent<PlayerBehaviour>();
+            if (player == null) { return; }
+
+            Dataz.target = player;
+            Log("Player entered");
+
+        } else if (msg == MessageKind.ENEMY_EXIT) {
+            Collider collider = (Collider)payload;
+            // TODO(Cristian): Use a unique ID
+            if (collider.tag == "Player") { 
+                Dataz.target = null;
+                Dataz.currentShotInterval = 0f;
+
+                Log("Player left");
             }
         }
     }
