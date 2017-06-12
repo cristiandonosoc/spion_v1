@@ -98,4 +98,3 @@ public struct SerializableType : ISerializationCallbackReceiver {
 
     #endregion OPERATORS
 }
-

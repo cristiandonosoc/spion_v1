@@ -116,19 +116,19 @@ public class TriggerZoneBehaviour : CustomMonoBehaviour {
 
     void OnTriggerEnter(Collider collider) {
         foreach (TriggerZoneMapping mapping in EnterReceivers) {
-            TriggerZoneMessage.MessagePayload payload = new TriggerZoneMessage.MessagePayload();
-            payload.collider = collider;
-            payload.internalMessage = mapping.messageToSend;
-            mapping.target.ReceiveMessage(TriggerZoneMessage.MessageKind.ENTER, payload);
+            // TODO(Cristian): Make this mapping occur in TriggerZoneManager, for better logging
+            mapping.target.ReceiveMessage(mapping.messageToSend.type.type,
+                                          mapping.messageToSend.messageKind,
+                                          collider);
         }
     }
 
     void OnTriggerExit(Collider collider) {
         foreach (TriggerZoneMapping mapping in ExitReceivers) {
-            TriggerZoneMessage.MessagePayload payload = new TriggerZoneMessage.MessagePayload();
-            payload.collider = collider;
-            payload.internalMessage = mapping.messageToSend;
-            mapping.target.ReceiveMessage(TriggerZoneMessage.MessageKind.EXIT, payload);
+            // TODO(Cristian): Make this mapping occur in TriggerZoneManager, for better logging
+            mapping.target.ReceiveMessage(mapping.messageToSend.type.type,
+                                          mapping.messageToSend.messageKind,
+                                          collider);
         }
     }
 
