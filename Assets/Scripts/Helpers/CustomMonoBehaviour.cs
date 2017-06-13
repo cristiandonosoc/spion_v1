@@ -18,6 +18,14 @@ using UnityEngine;
 [ExecuteInEditMode]
 public abstract class CustomMonoBehaviour : MonoBehaviour {
 
+    [SerializeField]
+    private uint _GUID = 0;
+    public uint GUID {
+        get {
+            return _GUID;
+        }
+    }
+
     private string FormatMessage(string message, params object[] args) {
         return string.Format("[Game Object: \"{0}\", Component: \"{1}\"] => {2}",
                              gameObject.name,
@@ -40,6 +48,10 @@ public abstract class CustomMonoBehaviour : MonoBehaviour {
     public bool editorInitialized = false;
 
     public void Awake() {
+        if (_GUID == 0) {
+            _GUID = SingletonBehaviour<GUIDManagerBehaviour>.Instance.GetGUID();
+        }
+
         if (Application.isPlaying) {
             PlayModeAwake();
             return;
