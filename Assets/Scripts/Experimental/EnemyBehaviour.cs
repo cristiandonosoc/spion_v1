@@ -5,50 +5,67 @@ using UnityEngine;
 
 public class EnemyBehaviour : CustomMonoBehaviour {
 
+    #region DATA
+
     [Serializable]
     public class Data {
         public PlayerBehaviour target;
+        public ProjectileBehaviour projectilePrefab;
+        public SparksParticleSystemBehaviour sparksParticleSystemPrefab;
+        public ParticleSystem explosionParticleSystemPrefab;
+        public HealthComponentBehaviour healthComponent;
 
         public float shotInterval = 1f;
         public float currentShotInterval = 0f;
+        public float shotSpeed = 5f;
     }
     [SerializeField]
     private Data _data;
     public Data Dataz {
         get {
-            if (_data == null) {
-                _data = new Data();
-            }
+            if (_data == null) { _data = new Data(); }
             return _data;
         }
     }
 
+    public ProjectileBehaviour ProjectilePrefab {
+        get {
+            return Dataz.projectilePrefab;
+        }
+    }
 
-    [SerializeField]
+    // TODO(Cristian): Use generic ParticleBehaviour class
+    public SparksParticleSystemBehaviour SparksParticleSystemPrefab {
+        get {
+            return Dataz.sparksParticleSystemPrefab;
+        }
+    }
+
     private SparksParticleSystemBehaviour _sparksParticleSystem;
     public SparksParticleSystemBehaviour SparksParticleSystem {
         get {
             if (_sparksParticleSystem == null) {
-                _sparksParticleSystem = GetComponentInChildren<SparksParticleSystemBehaviour>();
+                _sparksParticleSystem = Instantiate<SparksParticleSystemBehaviour>(SparksParticleSystemPrefab);
+                _sparksParticleSystem.transform.parent = transform;
+                _sparksParticleSystem.transform.localPosition = Vector3.zero;
             }
             return _sparksParticleSystem;
         }
     }
 
-    [SerializeField]
-    private ParticleSystem _explosionParticleSystemPrefab;
     public ParticleSystem ExplosionParticleSystemPrefab {
         get {
-            return _explosionParticleSystemPrefab;
+            return Dataz.explosionParticleSystemPrefab;
         }
     }
 
-    private HealthComponentBehaviour _healthComponent;
-
-    protected override void PlayModeAwake() {
-        _sparksParticleSystem = GetComponentInChildren<SparksParticleSystemBehaviour>();
-        _healthComponent = GetComponent<HealthComponentBehaviour>();
+    public HealthComponentBehaviour HealthComponent {
+        get {
+            return Dataz.healthComponent;
+        }
     }
+
+    #endregion DATA
 
     #region UPDATE
 
@@ -59,6 +76,11 @@ public class EnemyBehaviour : CustomMonoBehaviour {
                 Dataz.currentShotInterval -= Dataz.shotInterval;
 
                 Log("Shot");
+
+                var projectile = Instantiate<ProjectileBehaviour>(ProjectilePrefab);
+                projectile.Direction = Dataz.target.transform.position - transform.position;
+                projectile.Speed = Dataz.shotSpeed;
+                projectile.transform.position = transform.position;
             }
         }
     }
@@ -87,10 +109,10 @@ public class EnemyBehaviour : CustomMonoBehaviour {
             Log("HIT");
             SparksParticleSystem.Play();
 
-            if (_healthComponent != null) {
-                _healthComponent.CurrentHP -= 3;
+            if (HealthComponent != null) {
+                HealthComponent.CurrentHP -= 3;
 
-                if (_healthComponent.CurrentHP == 0) {
+                if (HealthComponent.CurrentHP == 0) {
                     if (ExplosionParticleSystemPrefab != null) {
                         var explosion = Instantiate<ParticleSystem>(ExplosionParticleSystemPrefab);
                         explosion.transform.position = transform.position;
@@ -112,8 +134,10 @@ public class EnemyBehaviour : CustomMonoBehaviour {
 
         } else if (msg == MessageKind.ENEMY_EXIT) {
             Collider collider = (Collider)payload;
-            // TODO(Cristian): Use a unique ID
-            if (collider.tag == "Player") { 
+            PlayerBehaviour player = collider.GetComponent<PlayerBehaviour>();
+            if (player == null) { return; }
+
+            if (player.GUID == Dataz.target.GUID) {
                 Dataz.target = null;
                 Dataz.currentShotInterval = 0f;
 
