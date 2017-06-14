@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
@@ -18,13 +19,18 @@ using UnityEngine;
 [ExecuteInEditMode]
 public abstract class CustomMonoBehaviour : MonoBehaviour {
 
+    #region DATA
+
     [SerializeField]
     private uint _GUID = 0;
     public uint GUID {
-        get {
-            return _GUID;
-        }
+        get { return _GUID; }
     }
+
+    public TagDatabaseScriptableObject TagDatabase;
+    public List<Tag> tags;
+
+    #endregion DATA
 
     private string FormatMessage(string message, params object[] args) {
         return string.Format("[Game Object: \"{0}\", Component: \"{1}\"] => {2}",
