@@ -5,7 +5,7 @@ using UnityEngine;
 
 public enum Tag {
     PLAYER,
-    ENEMY
+    ENEMY,
 }
 
 public class TagBehaviour : MonoBehaviour {

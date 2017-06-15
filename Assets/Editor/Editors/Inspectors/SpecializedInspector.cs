@@ -51,7 +51,7 @@ public class SpecializedInspector : Editor {
         _foldoutStatus[title] = opened;
     }
 
-    protected void HorizontalBreak() {
+    public static void HorizontalBreak() {
         EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
     }
 
