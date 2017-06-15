@@ -125,9 +125,9 @@ public class EnemyBehaviour : CustomMonoBehaviour {
             }
         } else if (msg == MessageKind.ENEMY_ENTER) {
             Collider collider = (Collider)payload;
-            if (collider.tag != "Player") { return; }
             PlayerBehaviour player = collider.GetComponent<PlayerBehaviour>();
             if (player == null) { return; }
+            if (!player.HasTags(Tag.PLAYER)) { return; }
 
             Dataz.target = player;
             Log("Player entered");

@@ -27,8 +27,7 @@ public abstract class CustomMonoBehaviour : MonoBehaviour {
         get { return _GUID; }
     }
 
-    public TagDatabaseScriptableObject TagDatabase;
-    public List<Tag> tags;
+    private TagBehaviour _tagBehaviour;
 
     #endregion DATA
 
@@ -59,6 +58,8 @@ public abstract class CustomMonoBehaviour : MonoBehaviour {
         }
 
         if (Application.isPlaying) {
+            // We only want tags loaded on runtime?
+            _tagBehaviour = GetComponent<TagBehaviour>();
             PlayModeAwake();
             return;
         }
@@ -103,10 +104,6 @@ public abstract class CustomMonoBehaviour : MonoBehaviour {
 #endif
     }
 
-    //public virtual void ReceiveMessage(Message message) {
-    //    LogWarning("Received message in base class");
-    //}
-
     public void ReceiveMessage<T>(T msg, object payload = null) where T : IConvertible { 
         ReceiveMessage(typeof(T), (int)(object)msg, payload);
     }
@@ -124,6 +121,30 @@ public abstract class CustomMonoBehaviour : MonoBehaviour {
                                          int msgValue,
                                          Collider triggerCollider) {
         LogWarning("Received Trigger Zone Event in base class");
+    }
+
+    /// <summary>
+    /// Checks whether an object has all the tags associated
+    /// </summary>
+    /// <param name="tags">The tags to check</param>
+    /// <returns>Whether the object has all the tags</returns>
+    public bool HasTags(params Tag[] tags) {
+        if (_tagBehaviour == null) {
+            LogWarning("Object doesn't have a TagBehaviour component associated");
+            return false;
+        }
+
+        foreach (Tag tag in tags) {
+            bool found = false;
+            foreach (Tag ownedTag in _tagBehaviour.tags) {
+                if (tag == ownedTag) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) { return false; }
+        }
+        return true;
     }
 
 }
