@@ -136,7 +136,7 @@ public abstract class CustomMonoBehaviour : MonoBehaviour {
 
         foreach (Tag tag in tags) {
             bool found = false;
-            foreach (Tag ownedTag in _tagBehaviour.tags) {
+            foreach (Tag ownedTag in _tagBehaviour.Tags) {
                 if (tag == ownedTag) {
                     found = true;
                     break;

@@ -20,10 +20,10 @@ public class TagBehaviourEditor : SpecializedInspector {
         Tag changeTag = Tag.PLAYER;     // Ignore initial value
         int changeIndex = -1;
         int removeIndex = -1;
-        for (int i = 0; i < _target.tags.Count; i++) {
+        for (int i = 0; i < _target.Tags.Count; i++) {
             EditorGUILayout.BeginHorizontal();
 
-            Tag tag = _target.tags[i];
+            Tag tag = _target.Tags[i];
             newTag = (Tag)EditorGUILayout.EnumPopup(tag);
             if (tag != newTag) {
                 changeIndex = i;
@@ -37,13 +37,13 @@ public class TagBehaviourEditor : SpecializedInspector {
         }
 
         if (removeIndex != -1) {
-            _target.tags.RemoveAt(removeIndex);
-            _target.tags.Sort();
+            _target.Tags.RemoveAt(removeIndex);
+            _target.Tags.Sort();
 
         } else if (changeIndex != -1) {
-            if (!_target.tags.Contains(changeTag)) {
-                _target.tags[changeIndex] = newTag;
-                _target.tags.Sort();
+            if (!_target.Tags.Contains(changeTag)) {
+                _target.Tags[changeIndex] = newTag;
+                _target.Tags.Sort();
             } else {
                 RepeatedWarning(changeTag);
             }
@@ -55,9 +55,9 @@ public class TagBehaviourEditor : SpecializedInspector {
 
         _selectedTag = (Tag)EditorGUILayout.EnumPopup(_selectedTag);
         if (GUILayout.Button("Add")) {
-            if (!_target.tags.Contains(_selectedTag)) {
-                _target.tags.Add(_selectedTag);
-                _target.tags.Sort();
+            if (!_target.Tags.Contains(_selectedTag)) {
+                _target.Tags.Add(_selectedTag);
+                _target.Tags.Sort();
             } else {
                 RepeatedWarning(_selectedTag);
             }

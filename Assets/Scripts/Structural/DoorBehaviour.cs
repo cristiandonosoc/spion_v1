@@ -164,6 +164,12 @@ public class DoorBehaviour : CustomMonoBehaviour {
             Open();
         } else if (msg == MessageKind.CLOSE) {
             Close();
+        } else if (msg == MessageKind.CREATE_DIALOG) {
+            Collider collider = (Collider)payload;
+            EnterDoorZoneTrigger(collider);
+        } else if (msg == MessageKind.DESTROY_DIALOG) {
+            Collider collider = (Collider)payload;
+            ExitDoorZoneTrigger(collider);
         }
     }
 

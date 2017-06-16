@@ -9,5 +9,14 @@ public enum Tag {
 }
 
 public class TagBehaviour : MonoBehaviour {
-    public List<Tag> tags;
+    [SerializeField]
+    public List<Tag> _tags;
+    public List<Tag> Tags {
+        get {
+            if (_tags == null) {
+                _tags = new List<Tag>();
+            }
+            return _tags;
+        }
+    }
 }
