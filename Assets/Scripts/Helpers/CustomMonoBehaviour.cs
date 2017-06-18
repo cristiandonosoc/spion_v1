@@ -19,12 +19,6 @@ using UnityEngine;
 [ExecuteInEditMode]
 public abstract class CustomMonoBehaviour : MonoBehaviour {
 
-    #region DATA
-
-    private TagBehaviour _tagBehaviour;
-
-    #endregion DATA
-
     private string FormatMessage(string message, params object[] args) {
         return string.Format("[Game Object: \"{0}\", Component: \"{1}\"] => {2}",
                              gameObject.name,

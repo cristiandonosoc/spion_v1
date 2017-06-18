@@ -231,7 +231,7 @@ public class PlayerBehaviour : EntityMonoBehaviour {
             _stateMachine.ChangeState(States.NORMAL);
         } else if (msg == MessageKind.PROJECTILE_COLLISION) {
             ProjectileHitData hitData = (ProjectileHitData)payload;
-            Log("Received {0} damage", hitData.damage);
+            HealthComponent.CurrentHP -= hitData.damage;
         }
     }
 
