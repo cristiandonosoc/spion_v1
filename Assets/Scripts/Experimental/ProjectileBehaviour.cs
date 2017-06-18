@@ -74,7 +74,7 @@ public class ProjectileBehaviour : CustomMonoBehaviour {
     }
 
     void OnTriggerEnter(Collider collider) {
-        CustomMonoBehaviour target = collider.GetComponent<CustomMonoBehaviour>();
+        var target = collider.GetComponent<EntityMonoBehaviour>();
         if (target == null) { return; }
 
         if (!target.HasTags(Tag.PLAYER)) { return; }

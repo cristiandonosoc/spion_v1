@@ -21,12 +21,6 @@ public abstract class CustomMonoBehaviour : MonoBehaviour {
 
     #region DATA
 
-    [SerializeField]
-    private uint _GUID = 0;
-    public uint GUID {
-        get { return _GUID; }
-    }
-
     private TagBehaviour _tagBehaviour;
 
     #endregion DATA
@@ -53,13 +47,7 @@ public abstract class CustomMonoBehaviour : MonoBehaviour {
     public bool editorInitialized = false;
 
     public void Awake() {
-        if (_GUID == 0) {
-            _GUID = SingletonBehaviour<GUIDManagerBehaviour>.Instance.GetGUID();
-        }
-
         if (Application.isPlaying) {
-            // We only want tags loaded on runtime?
-            _tagBehaviour = GetComponent<TagBehaviour>();
             PlayModeAwake();
             return;
         }
@@ -121,29 +109,6 @@ public abstract class CustomMonoBehaviour : MonoBehaviour {
                                          int msgValue,
                                          Collider triggerCollider) {
         LogWarning("Received Trigger Zone Event in base class");
-    }
-
-    /// <summary>
-    /// Checks whether an object has all the tags associated
-    /// </summary>
-    /// <param name="tags">The tags to check</param>
-    /// <returns>Whether the object has all the tags</returns>
-    public bool HasTags(params Tag[] tags) {
-        if (_tagBehaviour == null) {
-            return false;
-        }
-
-        foreach (Tag tag in tags) {
-            bool found = false;
-            foreach (Tag ownedTag in _tagBehaviour.Tags) {
-                if (tag == ownedTag) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) { return false; }
-        }
-        return true;
     }
 
 }
