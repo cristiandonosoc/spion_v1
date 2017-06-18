@@ -99,6 +99,8 @@ public class EnemyBehaviour : EntityMonoBehaviour {
     public override void ReceiveMessage(Type msgType, int msgValue, object payload = null) {
         if (msgType == typeof(MessageKind)) {
             ProcessMessage((MessageKind)msgValue, payload);
+        } else if (msgType == typeof(HealthComponentBehaviour.Messages)) {
+            ProcessMessage((HealthComponentBehaviour.Messages)msgValue, payload);
         } else {
             LogError("Received wrong MessageKind: {0}", msgType.FullName);
         }
@@ -111,17 +113,6 @@ public class EnemyBehaviour : EntityMonoBehaviour {
 
             if (HealthComponent != null) {
                 HealthComponent.CurrentHP -= 3;
-
-                if (HealthComponent.CurrentHP == 0) {
-                    if (ExplosionParticleSystemPrefab != null) {
-                        var explosion = Instantiate<ParticleSystem>(ExplosionParticleSystemPrefab);
-                        explosion.transform.position = transform.position;
-                        explosion.Play();
-                        Destroy(gameObject);
-                        // We destroy the explostion after a while
-                        Destroy(explosion.gameObject, explosion.main.duration);
-                    }
-                }
             }
         } else if (msg == MessageKind.ENEMY_ENTER) {
             Collider collider = (Collider)payload;
@@ -143,6 +134,17 @@ public class EnemyBehaviour : EntityMonoBehaviour {
 
                 Log("Player left");
             }
+        }
+    }
+
+    private void ProcessMessage(HealthComponentBehaviour.Messages msg, object payload = null) {
+        if (msg == HealthComponentBehaviour.Messages.NO_HEALTH) {
+            var explosion = Instantiate<ParticleSystem>(ExplosionParticleSystemPrefab);
+            explosion.transform.position = transform.position;
+            explosion.Play();
+            Destroy(gameObject);
+            // We destroy the explostion after a while
+            Destroy(explosion.gameObject, explosion.main.duration);
         }
     }
 
