@@ -3,6 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[Serializable]
+public class ProjectileHitData {
+    public int damage;
+}
+
 public class ProjectileBehaviour : CustomMonoBehaviour {
 
     #region DATA
@@ -15,9 +20,12 @@ public class ProjectileBehaviour : CustomMonoBehaviour {
         // TODO(Cristian): Make particles use an object pool
         public float lifetime = 5;
         public float currentLifetime = 0;
+        public ProjectileHitData projectileHitData;
 
         public Data() {
             direction = new Vector3(1, 0, 0);
+            projectileHitData = new ProjectileHitData();
+            projectileHitData.damage = 1;
             direction.Normalize();
         }
     }
@@ -50,6 +58,10 @@ public class ProjectileBehaviour : CustomMonoBehaviour {
         set { Dataz.currentLifetime = value; }
     }
 
+    public ProjectileHitData ProjectileHitData {
+        get { return Dataz.projectileHitData; }
+    }
+
     #endregion DATA
 
     protected override void PlayModeUpdate() {
@@ -60,4 +72,15 @@ public class ProjectileBehaviour : CustomMonoBehaviour {
             Destroy(gameObject);
         }
     }
+
+    void OnTriggerEnter(Collider collider) {
+        CustomMonoBehaviour target = collider.GetComponent<CustomMonoBehaviour>();
+        if (target == null) { return; }
+
+        if (!target.HasTags(Tag.PLAYER)) { return; }
+
+        target.ReceiveMessage(PlayerBehaviour.MessageKind.PROJECTILE_COLLISION,
+                              Dataz.projectileHitData);
+    }
+
 }

@@ -130,7 +130,6 @@ public abstract class CustomMonoBehaviour : MonoBehaviour {
     /// <returns>Whether the object has all the tags</returns>
     public bool HasTags(params Tag[] tags) {
         if (_tagBehaviour == null) {
-            LogWarning("Object doesn't have a TagBehaviour component associated");
             return false;
         }
 

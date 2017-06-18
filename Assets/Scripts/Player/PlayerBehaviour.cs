@@ -214,7 +214,8 @@ public class PlayerBehaviour : CustomMonoBehaviour {
 
     [MessageKindMarker]
     public enum MessageKind {
-        ATTACK_STOPPED
+        ATTACK_STOPPED,
+        PROJECTILE_COLLISION
     }
 
     public override void ReceiveMessage(Type msgType, int msgValue, object payload = null) {
@@ -228,6 +229,9 @@ public class PlayerBehaviour : CustomMonoBehaviour {
     public void ProcessMessage(MessageKind msg, object payload) {
         if (msg == MessageKind.ATTACK_STOPPED) {
             _stateMachine.ChangeState(States.NORMAL);
+        } else if (msg == MessageKind.PROJECTILE_COLLISION) {
+            ProjectileHitData hitData = (ProjectileHitData)payload;
+            Log("Received {0} damage", hitData.damage);
         }
     }
 
