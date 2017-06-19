@@ -10,6 +10,10 @@ public class ProjectileHitData {
 
 public class ProjectileBehaviour : CustomMonoBehaviour {
 
+    public enum Messages {
+        HIT
+    }
+
     #region DATA
 
     [Serializable]
@@ -79,8 +83,7 @@ public class ProjectileBehaviour : CustomMonoBehaviour {
 
         if (!target.HasTags(Tag.PLAYER)) { return; }
 
-        target.ReceiveMessage(PlayerBehaviour.MessageKind.PROJECTILE_COLLISION,
-                              Dataz.projectileHitData);
+        target.ReceiveMessage(Messages.HIT, Dataz.projectileHitData);
     }
 
 }

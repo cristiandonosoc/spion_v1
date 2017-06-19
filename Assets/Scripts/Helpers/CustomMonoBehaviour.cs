@@ -86,6 +86,15 @@ public abstract class CustomMonoBehaviour : MonoBehaviour {
 #endif
     }
 
+    /// <summary>
+    /// This overload is here to make it easier to send messages, as the type
+    /// can be infered by the call.
+    /// Sadly this cannot be done for the receiving because they don't have
+    /// template specialization
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="msg"></param>
+    /// <param name="payload"></param>
     public void ReceiveMessage<T>(T msg, object payload = null) where T : IConvertible { 
         ReceiveMessage(typeof(T), (int)(object)msg, payload);
     }

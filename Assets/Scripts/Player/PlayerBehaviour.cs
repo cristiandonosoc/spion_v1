@@ -214,13 +214,16 @@ public class PlayerBehaviour : EntityMonoBehaviour {
 
     [MessageKindMarker]
     public enum MessageKind {
-        ATTACK_STOPPED,
-        PROJECTILE_COLLISION
+        ATTACK_STOPPED
     }
 
     public override void ReceiveMessage(Type msgType, int msgValue, object payload = null) {
         if (msgType == typeof(MessageKind)) {
             ProcessMessage((MessageKind)msgValue, payload);
+        } else if (msgType == typeof(ProjectileBehaviour.Messages)) {
+            ProcessMessage((ProjectileBehaviour.Messages)msgValue, payload);
+        } else if (msgType == typeof(HealthComponentBehaviour.Messages)) {
+            ProcessMessage((HealthComponentBehaviour.Messages)msgValue, payload);
         } else {
             LogError("Received wrong MessageKind: {0}", msgType.FullName);
         }
@@ -229,9 +232,19 @@ public class PlayerBehaviour : EntityMonoBehaviour {
     public void ProcessMessage(MessageKind msg, object payload) {
         if (msg == MessageKind.ATTACK_STOPPED) {
             _stateMachine.ChangeState(States.NORMAL);
-        } else if (msg == MessageKind.PROJECTILE_COLLISION) {
+        }
+    }
+
+    public void ProcessMessage(ProjectileBehaviour.Messages msg, object payload) {
+        if (msg == ProjectileBehaviour.Messages.HIT) {
             ProjectileHitData hitData = (ProjectileHitData)payload;
             HealthComponent.CurrentHP -= hitData.damage;
+        }
+    }
+
+    public void ProcessMessage(HealthComponentBehaviour.Messages msg, object payload) {
+        if (msg == HealthComponentBehaviour.Messages.NO_HEALTH) {
+            Log("DED");
         }
     }
 
