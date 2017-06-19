@@ -48,6 +48,7 @@ public class PlayerBehaviour : EntityMonoBehaviour {
         public float gravitySpeed = 0.1f;
 
         public HealthComponentBehaviour healthComponent;
+        public ParticleSystemBehaviour deathExplosion;
 
         public Data() {
             moveData = new MoveData();
@@ -244,7 +245,11 @@ public class PlayerBehaviour : EntityMonoBehaviour {
 
     public void ProcessMessage(HealthComponentBehaviour.Messages msg, object payload) {
         if (msg == HealthComponentBehaviour.Messages.NO_HEALTH) {
-            Log("DED");
+            var explosion = Instantiate<ParticleSystemBehaviour>(InternalData.deathExplosion);
+            explosion.transform.position = transform.position;
+            explosion.Play();
+            Destroy(gameObject);
+            Destroy(explosion.gameObject, explosion.Duration);
         }
     }
 
