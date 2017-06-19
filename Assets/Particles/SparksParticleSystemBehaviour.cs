@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SparksParticleSystemBehaviour : MonoBehaviour {
+public class SparksParticleSystemBehaviour : ParticleSystemBehaviour {
 
     ParticleSystem _particleSystem;
     ParticleSystem ParticleSystemz {
@@ -15,16 +15,13 @@ public class SparksParticleSystemBehaviour : MonoBehaviour {
     }
     ParticleSystem.Particle[] _particles = new ParticleSystem.Particle[25];
 
-	// Use this for initialization
-	void Awake() {
+    protected override void PlayModeAwake() {
         // We initialize
         _particleSystem = ParticleSystemz;
-	}
+    }
 
-
-    public void Play() {
+    public override void Play() {
         ParticleSystemz.Play();
-
         StartCoroutine(LateFix());
     }
 

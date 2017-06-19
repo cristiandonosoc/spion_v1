@@ -11,8 +11,8 @@ public class EnemyBehaviour : EntityMonoBehaviour {
     public class Data {
         public PlayerBehaviour target;
         public ProjectileBehaviour projectilePrefab;
-        public SparksParticleSystemBehaviour sparksParticleSystemPrefab;
-        public ParticleSystem explosionParticleSystemPrefab;
+        public ParticleSystemBehaviour sparksParticleSystemPrefab;
+        public ParticleSystemBehaviour explosionParticleSystemPrefab;
         public HealthComponentBehaviour healthComponent;
 
         public float shotInterval = 1f;
@@ -35,17 +35,17 @@ public class EnemyBehaviour : EntityMonoBehaviour {
     }
 
     // TODO(Cristian): Use generic ParticleBehaviour class
-    public SparksParticleSystemBehaviour SparksParticleSystemPrefab {
+    public ParticleSystemBehaviour SparksParticleSystemPrefab {
         get {
             return Dataz.sparksParticleSystemPrefab;
         }
     }
 
-    private SparksParticleSystemBehaviour _sparksParticleSystem;
-    public SparksParticleSystemBehaviour SparksParticleSystem {
+    private ParticleSystemBehaviour _sparksParticleSystem;
+    public ParticleSystemBehaviour SparksParticleSystem {
         get {
             if (_sparksParticleSystem == null) {
-                _sparksParticleSystem = Instantiate<SparksParticleSystemBehaviour>(SparksParticleSystemPrefab);
+                _sparksParticleSystem = Instantiate<ParticleSystemBehaviour>(SparksParticleSystemPrefab);
                 _sparksParticleSystem.transform.parent = transform;
                 _sparksParticleSystem.transform.localPosition = Vector3.zero;
             }
@@ -53,7 +53,7 @@ public class EnemyBehaviour : EntityMonoBehaviour {
         }
     }
 
-    public ParticleSystem ExplosionParticleSystemPrefab {
+    public ParticleSystemBehaviour ExplosionParticleSystemPrefab {
         get {
             return Dataz.explosionParticleSystemPrefab;
         }
@@ -139,12 +139,12 @@ public class EnemyBehaviour : EntityMonoBehaviour {
 
     private void ProcessMessage(HealthComponentBehaviour.Messages msg, object payload = null) {
         if (msg == HealthComponentBehaviour.Messages.NO_HEALTH) {
-            var explosion = Instantiate<ParticleSystem>(ExplosionParticleSystemPrefab);
+            var explosion = Instantiate<ParticleSystemBehaviour>(ExplosionParticleSystemPrefab);
             explosion.transform.position = transform.position;
             explosion.Play();
             Destroy(gameObject);
             // We destroy the explostion after a while
-            Destroy(explosion.gameObject, explosion.main.duration);
+            Destroy(explosion.gameObject, explosion.Duration);
         }
     }
 
